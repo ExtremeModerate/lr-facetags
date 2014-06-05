@@ -8,6 +8,9 @@
 #include <QFileDialog>
 #include <QDir>
 #include <QDirIterator>
+#include <QFile>
+#include <QTextStream>
+#include <QTextBrowser>
 #include "./FacetagsDetection.h"
 
 using namespace std;
@@ -18,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->setupUi(this);
   connect(ui->pushDetect, SIGNAL(clicked()), this, SLOT(detect()));
   connect(ui->pushOpenFolder, SIGNAL(clicked()), this, SLOT(openFolder()));
+  connect(ui->pushSaveLog, SIGNAL(clicked()), this, SLOT(saveLog()));
 }
 
 MainWindow::~MainWindow() {
@@ -45,4 +49,14 @@ void MainWindow::openFolder() {
                                              QFileDialog::ShowDirsOnly
                                              | QFileDialog::DontResolveSymlinks);
   ui->inputPath->setText(dir);
+}
+
+void MainWindow::saveLog() {
+  // TODO
+  QFile file ("log.txt");
+  if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+  QTextStream out(&file);
+  out << ui->outputText->document()->toHtml();
+  file.close(); 
+  }
 }
