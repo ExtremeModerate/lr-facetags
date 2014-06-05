@@ -11,7 +11,7 @@ using namespace std;
 using namespace cv;
 
 // ____________________________________________________________________________
-void detectFaces(string & path, string & classifier)
+void detectFaces(const string & path, const string & classifier)
 {
   string face_cascade_name = "./Classifier/" + classifier + ".xml";
   CascadeClassifier face_cascade; 

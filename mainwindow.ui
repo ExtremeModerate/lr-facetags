@@ -19,12 +19,12 @@
      <rect>
       <x>10</x>
       <y>50</y>
-      <width>71</width>
+      <width>111</width>
       <height>17</height>
      </rect>
     </property>
     <property name="text">
-     <string>Detection:</string>
+     <string>Detection Classifier:</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_2">
@@ -32,12 +32,12 @@
      <rect>
       <x>330</x>
       <y>50</y>
-      <width>91</width>
+      <width>131</width>
       <height>17</height>
      </rect>
     </property>
     <property name="text">
-     <string>Recognition:</string>
+     <string>Recognition Algorithm:</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="inputPath">
