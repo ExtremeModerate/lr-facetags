@@ -35,7 +35,8 @@ void MainWindow::detect() {
   
   // iterate through folder
   dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
-  QDirIterator it(dir, QDirIterator::Subdirectories);
+  // add QDirIterator::Subdirectories as argument if you want to iterate trough subfolders
+  QDirIterator it(dir);
   while(it.hasNext()) {
    std::string file = it.next().toUtf8().constData();
    detectFaces(file, classifier);
