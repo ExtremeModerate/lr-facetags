@@ -36,7 +36,7 @@ int bla()
 	// READ EXAMPLE
 	vector<FaceObject> vfo2 = readObjectFile("testObjectFile001.txt");
 	
-	for(int i=0; i<vfo2.size(); i++)
+    for(size_t i=0; i<vfo2.size(); i++)
 	{
 		printf("___Objekt %i___\n",i);
 		printf("objectType=%i\n",vfo2[i].objectType);
