@@ -77,12 +77,12 @@
     </property>
     <item>
      <property name="text">
-      <string>haarcascade_frontalface_default</string>
+      <string>haarcascade_frontalface_alt</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>haarcascade_frontalface_alt</string>
+      <string>haarcascade_frontalface_default</string>
      </property>
     </item>
     <item>
@@ -172,7 +172,7 @@
      <x>0</x>
      <y>0</y>
      <width>620</width>
-     <height>25</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFacetag_Framework">

@@ -4,7 +4,7 @@
 #ifndef FACETAGSDETECTION_H
 #define FACETAGSDETECTION_H
 
-// Detect Faces using the openCV Algorithm and Classifier
+// Detect Faces using the openCV Algorithm and a given Classifier
 void detectFaces(std::string & path, std::string & classifier);
 
 #endif // FACETAGSDETECTION_H

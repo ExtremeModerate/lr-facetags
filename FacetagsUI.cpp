@@ -36,7 +36,6 @@ void MainWindow::detect() {
    std::string file = it.next().toUtf8().constData();
    detectFaces(file, classifier);
   }
-
   ui->outputText->append("Detection done!");
 }
 
