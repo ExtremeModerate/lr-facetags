@@ -50,7 +50,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>./Images</string>
+     <string>/home/ubuntu/proj/Images</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushOpenFolder">

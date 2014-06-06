@@ -1,4 +1,5 @@
 #include "readWriteObjectFile.h"
+#include "./FacetagsUI.h"
 
 // ______________________________________________________________________________________________
 std::vector<FaceObject> readObjectFile(const std::string &sFilename)
@@ -33,12 +34,13 @@ std::vector<FaceObject> readObjectFile(const std::string &sFilename)
 bool writeObjectFile(const std::vector<FaceObject> &vfo, const std::string &sFilename, bool append)
 {
 	std::ofstream ofObjFile;
+  std::string fullPath = sFullPath + "/metaface/" + sDate + "/" + sFilename;
 	if(append)
-		ofObjFile.open(sFilename.c_str(), std::ofstream::app);
+		ofObjFile.open(fullPath.c_str(), std::ofstream::app);
 	else
-		ofObjFile.open(sFilename.c_str());
+		ofObjFile.open(fullPath.c_str());
 	if(!ofObjFile) return false;
-	for(int i=0; i<vfo.size(); i++)	{
+	for(size_t i=0; i<vfo.size(); i++)	{
 		ofObjFile << static_cast<int>(vfo[i].objectType) << " ";
 		ofObjFile << vfo[i].objectID << " ";
 		ofObjFile << vfo[i].x << " ";

@@ -5,6 +5,6 @@
 #define FACETAGSDETECTION_H
 
 // Detect Faces using the openCV Algorithm and a given Classifier
-void detectFaces(const std::string & path, const std::string & classifier);
+void detectFaces(const std::string & path, const std::string & fileName, const std::string & classifier);
 
 #endif // FACETAGSDETECTION_H
