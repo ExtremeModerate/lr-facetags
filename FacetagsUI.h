@@ -6,9 +6,6 @@
 
 #include <QMainWindow>
 
-extern std::string sDate;
-extern std::string sFullPath;
-
 namespace Ui {
   class MainWindow;
 }

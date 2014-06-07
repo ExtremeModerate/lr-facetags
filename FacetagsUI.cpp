@@ -14,12 +14,11 @@
 #include <QDateTime>
 #include <iostream>
 #include "./FacetagsDetection.h"
-
+#include "./readWriteObjectFile.h"
+#include "./FaceObject.h"
 
 using namespace std;
 
-std::string sDate;
-std::string sFullPath;
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
@@ -37,17 +36,18 @@ MainWindow::~MainWindow() {
 
 void MainWindow::detect() {
   string sClassifier = ui->dropDownDetect->currentText().toUtf8().data();
-  QString path = ui->inputPath->text();
+  string sPath = ui->inputPath->text().toUtf8().constData();
+  string sFileName, sFullPath, sDate;
 
-  string sFileName;
+  vector<FaceObject> faceObjects;
+
   QDateTime dateTime;
   QString date = dateTime.currentDateTime().toString();
-  sDate = date.toUtf8().constData();
-  ////////////cout << sDate << endl;
-
+  sDate = dateTime.currentDateTime().toString().toUtf8().constData();
+  QString path = ui->inputPath->text();
   QDir dir = path;
   QString fullPath = dir.absolutePath();
-  sFullPath = path.toUtf8().constData();
+
 
   // create subfolders
   if (!QDir(path + "/metaface").exists()) {
@@ -56,14 +56,17 @@ void MainWindow::detect() {
   QDir dirr = QDir::root(); 
   dirr.mkpath(fullPath + "/metaface/" + date +"/");
 
-  // iterate through folder
+  // iterate through Image folder
   dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
   // add QDirIterator::Subdirectories as argument if you want to iterate trough subfolders
   QDirIterator it(dir);
   while(it.hasNext()) {
     it.next();
+    sFullPath = it.filePath().toUtf8().constData();
     sFileName = it.fileName().toUtf8().constData();
-    detectFaces(sFullPath, sFileName, sClassifier);
+    faceObjects = detectFaces(sFullPath, sClassifier);
+    writeObjectFile(faceObjects, sPath + "/metaface/" + sDate + "/" + sFileName + ".txt");
+    
   }
   ui->outputText->append("Detection done!");
 }

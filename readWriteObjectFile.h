@@ -50,7 +50,7 @@ for example because they don't appear anywhere else in the dataset. */
 
 std::vector<FaceObject> readObjectFile(const std::string &sFilename);
 
-bool writeObjectFile(const std::vector<FaceObject> &vfo, const std::string &sFilename, bool append=false);
+bool writeObjectFile(const std::vector<FaceObject> &vfo, const std::string &sPath, bool append=false);
 
 
 #endif // READWRITEOBJECTFILE_H
