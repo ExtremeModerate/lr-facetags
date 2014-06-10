@@ -5,7 +5,6 @@
 
 Manager* Manager::instanz = 0;
 
-
 Manager* Manager::exemplar()
 {
   if( instanz == 0 )
@@ -16,6 +15,10 @@ Manager* Manager::exemplar()
 
 
   // setui list elements
+}
+
+Manager Manager() {
+
 }
 
 
@@ -50,4 +53,83 @@ void Manager::displayDirectory() {
       //return EXIT_FAILURE;
     }
 
+}
+
+
+
+////////////////////////////////////////////////// Options
+
+
+// if the image changes we have to reset all markings and list elemets
+void Manager::changeImage() {
+    listObjects->clear();
+    //ToDo: load all stored objects from the disk
+    std::string file = selectedDirectory.toStdString() + "/.metaface/" + selectedFile.toStdString() + ".txt";
+    this->TagedElements = readObjectFile(file);
+
+    for(std::vector<FaceObject>::iterator it = this->TagedElements.begin(); it != this->TagedElements.end(); ++it) {
+        FaceObject fo = *it;
+        std::cerr << fo.objectID;
+        new QListWidgetItem(QString::fromStdString(fo.objectID), listObjects);
+    }
+
+    qDebug() << "loaded" << TagedElements.size() << "elements";
+}
+
+
+
+void Manager::addObjectClicked(RobWidget *imageWidget, ObjectType objectType, QString objectID, double truncated, OcclusionLevel occluded) {
+    qDebug() << "add Object Clicked!";
+    QRect x = imageWidget->getBandBox();
+
+    qDebug() << x;
+
+    FaceObject * t = new FaceObject();
+    t->x = x.x();
+    t->y = x.y();
+    t->height = x.height();
+    t->width = x.width();
+    t->truncationLevel = (float) truncated;
+    t->occlusionLevel = occluded;
+    t->objectID = objectID.toStdString();
+    t->objectType = objectType;
+    this->TagedElements.push_back(*t);
+
+    // add element to the list in the ui
+    new QListWidgetItem(objectID, listObjects);
+
+    // save vector to disk
+    std::string file = selectedDirectory.toStdString() + "/.metaface/" + selectedFile.toStdString() + ".txt";
+    QDir dir(selectedDirectory + "/.metaface/");
+    if (!dir.exists()) {
+        dir.mkpath(".");
+    }
+    bool res = writeObjectFile(this->TagedElements, file, false);
+
+    if(!res) {
+        qDebug() << "!!!!!faild to save to file!!!!!!";
+        //ToDo: Maybe handle a save error
+    } else {
+        std::cerr << "saved to file: " << file << " \n" << endl;
+    }
+
+}
+
+
+
+
+////////////////////////////////////////////////////////////
+
+// add a border to all stored faces
+QPixmap * Manager::frameAllFaces(QPixmap * pixmap, double scaleRatio) {
+    QPainter qPainter(pixmap);
+    qPainter.setBrush(Qt::NoBrush);
+    qPainter.setPen(Qt::red);
+
+    for(std::vector<FaceObject>::iterator it = this->TagedElements.begin(); it != this->TagedElements.end(); ++it) {
+        FaceObject fo = *it;
+        qPainter.drawRect((int)(fo.x / scaleRatio),(int)(fo.y / scaleRatio),(int)(fo.width / scaleRatio),(int) (fo.height / scaleRatio));
+    }
+
+    return pixmap;
 }

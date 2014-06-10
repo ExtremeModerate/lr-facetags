@@ -5,9 +5,17 @@
 #include <QString>
 #include <QDebug>
 #include <QListWidget>
+#include "robwidget.h"
 #include "mainwindow.h"
 #include "dirent.h"
 #include <sys/stat.h>
+#include "tagelement.h"
+#include "readWriteObjectFile.h"
+#include "FaceObject.h"
+#include <string>
+#include <iostream>
+
+class RobWidget;
 
 namespace Ui {
 class MainWindow;
@@ -22,7 +30,14 @@ public:
      void displayDirectory();
      //void setUi(Ui::MainWindow *ui);
      QListWidget *fileList;
+     QListWidget *listObjects;
      QString selectedDirectory;
+     QString selectedFile;
+
+     void addObjectClicked(RobWidget *imageWidget, ObjectType objectType, QString objectID, double truncated, OcclusionLevel occluded);
+     void changeImage();
+
+     QPixmap* frameAllFaces(QPixmap * pixmap, double scaleRatio);
 
    protected:
      Manager() {}
@@ -31,6 +46,9 @@ public:
      static Manager *instanz;
      bool directorySelected;
      //Ui::MainWindow *ui;
+
+     std::vector<FaceObject> TagedElements;
+
 
 
 

@@ -6,6 +6,7 @@
 #include <QFileDialog>
 #include <manager.h>
 #include <QString>
+#include "FaceObject.h"
 
 namespace Ui {
 class MainWindow;
@@ -25,6 +26,8 @@ private slots:
     void on_toolButton_clicked();
 
     void on_listWidgetFiles_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
+
+    void on_pushButton_clicked();
 
 private:
 

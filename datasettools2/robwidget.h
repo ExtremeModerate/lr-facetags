@@ -8,7 +8,8 @@
 #include <string>
 #include <QImage>
 #include <QLabel>
-#include "mainwindow.h"
+#include <QPainter>
+#include "manager.h"
 
 class RobWidget : public QWidget
 {
@@ -22,18 +23,23 @@ public:
     QImage displayImageOrigin;
     void scaleDisplayImage();
 
+
+    QRect getBandBox();
+
 protected:
     virtual void resizeEvent(QResizeEvent *);
 
 
 private:
-    MainWindow *mainWindow;
     QRubberBand *rubberBand;
     QPoint origin;
 
     QImage displayImage;
     QLabel *displayImageLable;
 
+    QPoint mousePos;
+
+    double scaleRatio;
 };
 
 #endif // ROBWIDGET_H

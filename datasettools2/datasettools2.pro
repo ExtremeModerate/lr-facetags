@@ -15,10 +15,16 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     robwidget.cpp \
-    manager.cpp
+    manager.cpp \
+    tagelement.cpp \
+readWriteObjectFile.cpp \
+FaceObject.cpp
 
 HEADERS  += mainwindow.h \
     robwidget.h \
-    manager.h
+    manager.h \
+    tagelement.h \
+readWriteObjectFile.h \
+FaceObject.h
 
 FORMS    += mainwindow.ui

@@ -26,6 +26,7 @@ void RobWidget::mousePressEvent(QMouseEvent *event){
 
     void RobWidget::mouseMoveEvent(QMouseEvent *event)
     {
+        mousePos = event->pos();
         rubberBand->setGeometry(QRect(origin, event->pos()).normalized());
     }
 
@@ -48,10 +49,31 @@ void RobWidget::mousePressEvent(QMouseEvent *event){
         if(this->width() < max) {
             max = this->width();
         }
+
+        // save scale ratio
+        scaleRatio = (double)max / (double) displayImageOrigin.height();
+        //fprintf(stderr, "Resize RobWidged %f \n", scaleRatio);
+
         displayImage = displayImageOrigin.scaledToHeight(max,Qt::SmoothTransformation);
 
         if(displayImageLable != 0) {
-        displayImageLable->setPixmap(QPixmap::fromImage(displayImage));
+
+            /// add all boxes to the image
+            QPixmap pixma = QPixmap::fromImage(displayImage);
+            /*QPainter qPainter(&pixma);
+            qPainter.setBrush(Qt::NoBrush);
+            qPainter.setPen(Qt::red);
+            //qPainter.drawRect(*x);
+            qPainter.drawRect(10,10,100,100);
+            */
+            Manager::exemplar()->frameAllFaces(&pixma, this->scaleRatio);
+
+
+
+            displayImageLable->setPixmap(pixma);
+
+
+            //displayImageLable->setPixmap(QPixmap::fromImage(displayImage));
         }
     }
 
@@ -59,3 +81,19 @@ void RobWidget::mousePressEvent(QMouseEvent *event){
      this->displayImageLable = lable;
      scaleDisplayImage();
  }
+
+ QRect RobWidget::getBandBox() {
+     QRect * x = new QRect(origin,mousePos);
+     QRect * xScaled = new QRect((int)(x->x() * scaleRatio), (int)(x->y() * scaleRatio), (int)(x->width() * scaleRatio), (int)(x->height() * scaleRatio));
+
+     return *xScaled;
+ }
+
+ /*QPixmap RobWidget::addImageBox() {
+     QPixmap pixma = QPixmap::fromImage(displayImage);
+     QPainter qPainter(&pixma);
+     qPainter.setBrush(Qt::NoBrush);
+     qPainter.setPen(Qt::red);
+     qPainter.drawRect(*x);
+     //displayImageLable->setPixmap(pixma);
+ }*/

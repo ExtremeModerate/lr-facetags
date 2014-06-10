@@ -71,6 +71,21 @@
        <bool>false</bool>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
         <widget class="QLabel" name="label_image">
          <property name="sizePolicy">
@@ -113,7 +128,7 @@
      </widget>
     </item>
     <item row="2" column="0" colspan="3">
-     <widget class="QWidget" name="widget_3" native="true">
+     <widget class="QWidget" name="bottom" native="true">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Ignored" vsizetype="Maximum">
         <horstretch>0</horstretch>
@@ -126,7 +141,7 @@
         <height>200</height>
        </size>
       </property>
-      <widget class="QWidget" name="widget" native="true">
+      <widget class="QWidget" name="truncated" native="true">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -135,7 +150,7 @@
          <height>80</height>
         </rect>
        </property>
-       <widget class="QSlider" name="horizontalSlider">
+       <widget class="QSlider" name="truncated_bar">
         <property name="geometry">
          <rect>
           <x>10</x>
@@ -143,6 +158,9 @@
           <width>181</width>
           <height>29</height>
          </rect>
+        </property>
+        <property name="maximum">
+         <number>100</number>
         </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -175,7 +193,7 @@
         </property>
        </widget>
       </widget>
-      <widget class="QLineEdit" name="lineEdit">
+      <widget class="QLineEdit" name="object_id">
        <property name="geometry">
         <rect>
          <x>550</x>
@@ -185,10 +203,10 @@
         </rect>
        </property>
        <property name="text">
-        <string>Oject ID</string>
+        <string>00000001</string>
        </property>
       </widget>
-      <widget class="QGroupBox" name="groupBox">
+      <widget class="QGroupBox" name="type">
        <property name="geometry">
         <rect>
          <x>440</x>
@@ -202,14 +220,14 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <widget class="QRadioButton" name="radioButton">
+         <widget class="QRadioButton" name="type_face">
           <property name="text">
            <string>Face</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QRadioButton" name="radioButton_2">
+         <widget class="QRadioButton" name="type_dontCareFace">
           <property name="text">
            <string>DontCareFace</string>
           </property>
@@ -217,7 +235,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QGroupBox" name="groupBox_2">
+      <widget class="QGroupBox" name="occluded">
        <property name="geometry">
         <rect>
          <x>250</x>
@@ -231,7 +249,7 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <widget class="QRadioButton" name="occluded_visivle">
+         <widget class="QRadioButton" name="occluded_visible">
           <property name="text">
            <string>fully visible</string>
           </property>
@@ -260,7 +278,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QListWidget" name="listWidget">
+      <widget class="QListWidget" name="listObjects">
        <property name="geometry">
         <rect>
          <x>810</x>
