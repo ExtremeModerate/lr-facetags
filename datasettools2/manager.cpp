@@ -98,6 +98,11 @@ void Manager::addObjectClicked(RobWidget *imageWidget, ObjectType objectType, QS
     // add element to the list in the ui
     new QListWidgetItem(objectID, listObjects);
 
+    this->saveFacesToDisk();
+
+}
+
+void Manager::saveFacesToDisk() {
     // save vector to disk
     std::string file = selectedDirectory.toStdString() + "/.metaface/" + selectedFile.toStdString() + ".txt";
     QDir dir(selectedDirectory + "/.metaface/");
@@ -112,9 +117,32 @@ void Manager::addObjectClicked(RobWidget *imageWidget, ObjectType objectType, QS
     } else {
         std::cerr << "saved to file: " << file << " \n" << endl;
     }
-
 }
 
+
+void Manager::removeElements(QList<QListWidgetItem *> elements) {
+    for(QList<QListWidgetItem *>::iterator it = elements.begin(); it != elements.end(); ++it) {
+        QListWidgetItem item = **it;
+        qDebug() << item.text();
+        /*for(std::vector<FaceObject>::iterator it2 = this->TagedElements.begin(); it2 != this->TagedElements.end(); ++it2) {
+            FaceObject fo = *it2;
+            if(fo.objectID == item.text().toStdString()) {
+                qDebug() << "found the item!";
+                this->TagedElements.erase(it2);
+
+            }
+        }*/
+        for (std::vector<FaceObject>::iterator it2 = this->TagedElements.begin(); it2 != this->TagedElements.end();) {
+            FaceObject fo = *it2;
+            if (fo.objectID == item.text().toStdString()) {
+              it2 = this->TagedElements.erase(it2);
+            } else {
+              ++it2;
+            }
+        }
+
+    }
+}
 
 
 

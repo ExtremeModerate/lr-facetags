@@ -77,3 +77,20 @@ void MainWindow::on_pushButton_clicked()
 
     ui->imageWidget->scaleDisplayImage();
 }
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    QList<QListWidgetItem *> list = ui->listObjects->selectedItems();
+    if(list.size() != 1) {
+
+    } else {
+        //ui->listObjects->remo
+        Manager::exemplar()->removeElements(list);
+
+    }
+    qDeleteAll(ui->listObjects->selectedItems());
+    ui->imageWidget->scaleDisplayImage();
+
+    // write new reduced list of faces to disk
+    Manager::exemplar()->saveFacesToDisk();
+}

@@ -36,8 +36,11 @@ public:
 
      void addObjectClicked(RobWidget *imageWidget, ObjectType objectType, QString objectID, double truncated, OcclusionLevel occluded);
      void changeImage();
+     void removeElements(QList<QListWidgetItem *> elements);
 
      QPixmap* frameAllFaces(QPixmap * pixmap, double scaleRatio);
+
+     void saveFacesToDisk();
 
    protected:
      Manager() {}
