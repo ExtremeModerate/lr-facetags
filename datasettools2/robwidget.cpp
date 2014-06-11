@@ -51,7 +51,7 @@ void RobWidget::mousePressEvent(QMouseEvent *event){
         }
 
         // save scale ratio
-        scaleRatio = (double)max / (double) displayImageOrigin.height();
+        this->scaleRatio = (double)max / (double) displayImageOrigin.height();
         //fprintf(stderr, "Resize RobWidged %f \n", scaleRatio);
 
         displayImage = displayImageOrigin.scaledToHeight(max,Qt::SmoothTransformation);
@@ -84,7 +84,7 @@ void RobWidget::mousePressEvent(QMouseEvent *event){
 
  QRect RobWidget::getBandBox() {
      QRect * x = new QRect(origin,mousePos);
-     QRect * xScaled = new QRect((int)(x->x() * scaleRatio), (int)(x->y() * scaleRatio), (int)(x->width() * scaleRatio), (int)(x->height() * scaleRatio));
+     QRect * xScaled = new QRect((int)(x->x() / scaleRatio), (int)(x->y() / scaleRatio), (int)(x->width() / scaleRatio), (int)(x->height() / scaleRatio));
 
      return *xScaled;
  }

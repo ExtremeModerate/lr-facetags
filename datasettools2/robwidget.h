@@ -25,6 +25,7 @@ public:
 
 
     QRect getBandBox();
+    double scaleRatio;
 
 protected:
     virtual void resizeEvent(QResizeEvent *);
@@ -39,7 +40,7 @@ private:
 
     QPoint mousePos;
 
-    double scaleRatio;
+
 };
 
 #endif // ROBWIDGET_H

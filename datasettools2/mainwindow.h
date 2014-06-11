@@ -31,6 +31,8 @@ private slots:
 
     void on_pushButton_2_clicked();
 
+    void on_object_id_textChanged(const QString &arg1);
+
 private:
 
 

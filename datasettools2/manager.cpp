@@ -78,17 +78,17 @@ void Manager::changeImage() {
 
 
 
-void Manager::addObjectClicked(RobWidget *imageWidget, ObjectType objectType, QString objectID, double truncated, OcclusionLevel occluded) {
+void Manager::addObjectClicked(RobWidget *imageWidget, ObjectType objectType, QString objectID, double truncated, OcclusionLevel occluded, double scaleRation) {
     qDebug() << "add Object Clicked!";
     QRect x = imageWidget->getBandBox();
 
     qDebug() << x;
 
     FaceObject * t = new FaceObject();
-    t->x = x.x();
-    t->y = x.y();
-    t->height = x.height();
-    t->width = x.width();
+    t->x = (int) (x.x());
+    t->y = (int) (x.y());
+    t->height = (int) (x.height());
+    t->width = (int) (x.width());
     t->truncationLevel = (float) truncated;
     t->occlusionLevel = occluded;
     t->objectID = objectID.toStdString();
@@ -156,7 +156,7 @@ QPixmap * Manager::frameAllFaces(QPixmap * pixmap, double scaleRatio) {
 
     for(std::vector<FaceObject>::iterator it = this->TagedElements.begin(); it != this->TagedElements.end(); ++it) {
         FaceObject fo = *it;
-        qPainter.drawRect((int)(fo.x / scaleRatio),(int)(fo.y / scaleRatio),(int)(fo.width / scaleRatio),(int) (fo.height / scaleRatio));
+        qPainter.drawRect((int)(fo.x * scaleRatio),(int)(fo.y * scaleRatio),(int)(fo.width * scaleRatio),(int) (fo.height * scaleRatio));
     }
 
     return pixmap;

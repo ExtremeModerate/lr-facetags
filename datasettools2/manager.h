@@ -34,7 +34,7 @@ public:
      QString selectedDirectory;
      QString selectedFile;
 
-     void addObjectClicked(RobWidget *imageWidget, ObjectType objectType, QString objectID, double truncated, OcclusionLevel occluded);
+     void addObjectClicked(RobWidget *imageWidget, ObjectType objectType, QString objectID, double truncated, OcclusionLevel occluded, double scaleRation);
      void changeImage();
      void removeElements(QList<QListWidgetItem *> elements);
 
