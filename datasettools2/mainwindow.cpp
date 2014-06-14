@@ -195,11 +195,8 @@ void MainWindow::on_listObjects_currentRowChanged(int currentRow)
 {
     if(currentRow != -1) {
         qDebug() << "current row is:" << currentRow;
-        QList<QListWidgetItem *> list = ui->listObjects->selectedItems();
+        ui->object_id->setText(ui->listObjects->item(currentRow)->text());
 
-        if(list.count() == 1) {
-            ui->object_id->setText(list.at(0)->text());
-        }
 
         Manager::exemplar()->selectedFace = currentRow;
 
@@ -207,7 +204,7 @@ void MainWindow::on_listObjects_currentRowChanged(int currentRow)
         FaceObject fo = Manager::exemplar()->TagedElements.at(currentRow);
         //qDebug() << QString::fromStdString(fo.objectID);
 
-        ui->truncated_bar->setValue(fo.truncationLevel);
+        ui->truncated_bar->setValue((int)(fo.truncationLevel * 100));
 
         if(fo.occlusionLevel == olNotOccluded) {
             ui->occluded_visible->setChecked(true);
@@ -229,6 +226,54 @@ void MainWindow::on_listObjects_currentRowChanged(int currentRow)
             ui->type_dontCareFace->setChecked(true);
         }
 
+        ui->imageWidget->scaleDisplayImage();
+    }
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent* e)
+{
+    if(Manager::exemplar()->selectedFace != -1) {
+        Manager::exemplar()->handleKeyEvent(e);
+        ui->imageWidget->scaleDisplayImage();
+    }
+}
+
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    if(Manager::exemplar()->selectedFace != -1) {
+
+        // face = 1; dontcareface = 2;
+        ObjectType type = otFace;
+        if(ui->type_dontCareFace->isChecked()) {
+            type = otDontCareFace;
+        }
+        double trunc = (double) ui->truncated_bar->value() / (double) 100;
+
+        //qDebug() << trunc;
+
+        //0 = fully visible, 1 = partly occluded, 2 = largely occluded, 3 = unknown
+        OcclusionLevel occluded = olUnknown;
+        if(ui->occluded_visible->isChecked()) {
+            occluded = olNotOccluded;
+        }
+        if(ui->occluded_largly->isChecked()) {
+            occluded = olLargelyOccluded;
+        }
+        if(ui->occluded_partly->isChecked()) {
+            occluded = olPartlyOccluded;
+        }
+
+        FaceObject& fo = Manager::exemplar()->TagedElements[Manager::exemplar()->selectedFace];
+        fo.truncationLevel = trunc;
+        fo.objectType = type;
+        fo.objectID = ui->object_id->text().toStdString();
+        fo.occlusionLevel = occluded;
+
+        Manager::exemplar()->saveFacesToDisk();
+
+        // rest all data and load everything again
+        Manager::exemplar()->changeImage();
         ui->imageWidget->scaleDisplayImage();
     }
 }

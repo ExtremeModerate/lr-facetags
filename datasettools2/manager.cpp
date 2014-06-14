@@ -170,3 +170,41 @@ QPixmap * Manager::frameAllFaces(QPixmap * pixmap, double scaleRatio) {
 
     return pixmap;
 }
+
+
+void Manager::handleKeyEvent(QKeyEvent* e) {
+    //qDebug() << e->key();
+    //qDebug() << e->text();
+    if(e->text() == "a") {
+        FaceObject& fo = TagedElements.at(selectedFace);
+        fo.x = fo.x - 1;
+    }
+    if(e->text() == "d") {
+        FaceObject& fo = TagedElements.at(selectedFace);
+        fo.x = fo.x + 1;
+    }
+    if(e->text() == "s") {
+        FaceObject& fo = TagedElements.at(selectedFace);
+        fo.y = fo.y + 1;
+    }
+    if(e->text() == "w") {
+        FaceObject& fo = TagedElements.at(selectedFace);
+        fo.y = fo.y - 1;
+    }
+    if(e->text() == "A") {
+        FaceObject& fo = TagedElements.at(selectedFace);
+        fo.width = fo.width - 1;
+    }
+    if(e->text() == "D") {
+        FaceObject& fo = TagedElements.at(selectedFace);
+        fo.width = fo.width + 1;
+    }
+    if(e->text() == "S") {
+        FaceObject& fo = TagedElements.at(selectedFace);
+        fo.height = fo.height + 1;
+    }
+    if(e->text() == "W") {
+        FaceObject& fo = TagedElements.at(selectedFace);
+        fo.height = fo.height - 1;
+    }
+}

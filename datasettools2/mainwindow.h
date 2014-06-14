@@ -21,6 +21,8 @@ public:
     ~MainWindow();
     Ui::MainWindow *ui;
 
+    void keyReleaseEvent(QKeyEvent* e);
+
 
 private slots:
     void on_toolButton_clicked();
@@ -34,6 +36,8 @@ private slots:
     void on_object_id_textChanged(const QString &arg1);
 
     void on_listObjects_currentRowChanged(int currentRow);
+
+    void on_pushButton_3_clicked();
 
 private:
 

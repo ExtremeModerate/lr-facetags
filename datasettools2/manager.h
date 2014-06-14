@@ -44,6 +44,8 @@ public:
 
      void saveFacesToDisk();
 
+     void handleKeyEvent(QKeyEvent* e);
+
    protected:
      Manager() {}
 
