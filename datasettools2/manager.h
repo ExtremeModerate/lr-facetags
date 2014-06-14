@@ -33,6 +33,8 @@ public:
      QListWidget *listObjects;
      QString selectedDirectory;
      QString selectedFile;
+     std::vector<FaceObject> TagedElements;
+     int selectedFace;
 
      void addObjectClicked(RobWidget *imageWidget, ObjectType objectType, QString objectID, double truncated, OcclusionLevel occluded, double scaleRation);
      void changeImage();
@@ -50,7 +52,7 @@ public:
      bool directorySelected;
      //Ui::MainWindow *ui;
 
-     std::vector<FaceObject> TagedElements;
+
 
 
 

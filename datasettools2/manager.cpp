@@ -7,8 +7,10 @@ Manager* Manager::instanz = 0;
 
 Manager* Manager::exemplar()
 {
-  if( instanz == 0 )
+  if( instanz == 0 ) {
     instanz = new Manager();
+    instanz->selectedFace = -1;
+  }
 
   instanz->directorySelected = false;
   return instanz;
@@ -18,7 +20,6 @@ Manager* Manager::exemplar()
 }
 
 Manager Manager() {
-
 }
 
 
@@ -154,9 +155,17 @@ QPixmap * Manager::frameAllFaces(QPixmap * pixmap, double scaleRatio) {
     qPainter.setBrush(Qt::NoBrush);
     qPainter.setPen(Qt::red);
 
+    int element = 0;
+
     for(std::vector<FaceObject>::iterator it = this->TagedElements.begin(); it != this->TagedElements.end(); ++it) {
         FaceObject fo = *it;
+        if(element != selectedFace) {
+            qPainter.setPen(Qt::red);
+        } else {
+            qPainter.setPen(Qt::green);
+        }
         qPainter.drawRect((int)(fo.x * scaleRatio),(int)(fo.y * scaleRatio),(int)(fo.width * scaleRatio),(int) (fo.height * scaleRatio));
+        element++;
     }
 
     return pixmap;

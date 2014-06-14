@@ -43,6 +43,7 @@ void MainWindow::on_listWidgetFiles_currentItemChanged(QListWidgetItem *current,
 
     if(current) {
         Manager::exemplar()->selectedFile = current->text();
+        Manager::exemplar()->selectedFace = -1;
         Manager::exemplar()->changeImage();
         ui->imageWidget->displayImageOrigin.load(path + "/" + current->text());
         ui->imageWidget->scaleDisplayImage();
@@ -190,11 +191,44 @@ void MainWindow::on_object_id_textChanged(const QString &arg1)
         }
 }
 
-void MainWindow::on_listObjects_clicked(const QModelIndex &index)
+void MainWindow::on_listObjects_currentRowChanged(int currentRow)
 {
-    QList<QListWidgetItem *> list = ui->listObjects->selectedItems();
+    if(currentRow != -1) {
+        qDebug() << "current row is:" << currentRow;
+        QList<QListWidgetItem *> list = ui->listObjects->selectedItems();
 
-    if(list.count() == 1) {
-        ui->object_id->setText(list.at(0)->text());
+        if(list.count() == 1) {
+            ui->object_id->setText(list.at(0)->text());
+        }
+
+        Manager::exemplar()->selectedFace = currentRow;
+
+        //qDebug() << "at row:" << index.row();
+        FaceObject fo = Manager::exemplar()->TagedElements.at(currentRow);
+        //qDebug() << QString::fromStdString(fo.objectID);
+
+        ui->truncated_bar->setValue(fo.truncationLevel);
+
+        if(fo.occlusionLevel == olNotOccluded) {
+            ui->occluded_visible->setChecked(true);
+        }
+        if(fo.occlusionLevel == olUnknown) {
+            ui->occluded_unknown->setChecked(true);
+        }
+        if(fo.occlusionLevel == olPartlyOccluded) {
+            ui->occluded_partly->setChecked(true);
+        }
+        if(fo.occlusionLevel == olLargelyOccluded) {
+            ui->occluded_largly->setChecked(true);
+        }
+
+        if(fo.objectType == otFace) {
+            ui->type_face->setChecked(true);
+        }
+        if(fo.objectType == otDontCareFace) {
+            ui->type_dontCareFace->setChecked(true);
+        }
+
+        ui->imageWidget->scaleDisplayImage();
     }
 }

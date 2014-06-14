@@ -33,7 +33,7 @@ private slots:
 
     void on_object_id_textChanged(const QString &arg1);
 
-    void on_listObjects_clicked(const QModelIndex &index);
+    void on_listObjects_currentRowChanged(int currentRow);
 
 private:
 
