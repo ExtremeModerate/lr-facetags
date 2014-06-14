@@ -84,6 +84,9 @@ void RobWidget::mousePressEvent(QMouseEvent *event){
 
  QRect RobWidget::getBandBox() {
      QRect * x = new QRect(origin,mousePos);
+     QRect x2 = x->normalized();
+     qDebug() << x2;
+     x = &x2;
      QRect * xScaled = new QRect((int)(x->x() / scaleRatio), (int)(x->y() / scaleRatio), (int)(x->width() / scaleRatio), (int)(x->height() / scaleRatio));
 
      return *xScaled;

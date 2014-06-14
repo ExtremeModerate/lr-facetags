@@ -125,6 +125,7 @@ void MainWindow::on_object_id_textChanged(const QString &arg1)
                         img->load(dir_name + "/" + fileName);
                         //QPixmap::copy(int x, int y, int width, int height )
                         QPixmap imgCroped = img->copy(fo.x, fo.y, fo.width, fo.height);
+                        qDebug() << "image crop x:" << fo.x << "y:" << fo.y << "width" << fo.width << "height:" << fo.height;
                         listCrops.push_back(imgCroped);
                     }
 
@@ -156,18 +157,44 @@ void MainWindow::on_object_id_textChanged(const QString &arg1)
         //qDebug()<<"Image "<<imgPath<<" was not opened!";
    // }
         int row = 0;
-        int colom = 0;
+        int column = 0;
+        int cell = 0;
         for(std::vector<QPixmap>::iterator it = listCrops.begin(); it != listCrops.end(); ++it) {
             QPixmap pm = *it;
             pm = pm.scaledToHeight(80,Qt::SmoothTransformation);
             QTableWidgetItem *thumbnail = new QTableWidgetItem;
             thumbnail->setData(Qt::DecorationRole, pm);
-            ui->tableIamges->setItem(colom, row, thumbnail);
-            if(colom == 2) {
+            ui->tableIamges->setItem(column, row, thumbnail);
+            if(column == 2) {
                 row++;
-                colom = 0;
+                cell++;
+                column = 0;
             } else {
                 row++;
+                cell++;
             }
         }
+
+        int maxCells = ui->tableIamges->rowCount() * ui->tableIamges->columnCount();
+        while(cell < 9) {
+            QTableWidgetItem *thumbnail = new QTableWidgetItem;
+            ui->tableIamges->setItem(column, row, thumbnail);
+            if(column == 2) {
+                row++;
+                cell++;
+                column = 0;
+            } else {
+                row++;
+                cell++;
+            }
+        }
+}
+
+void MainWindow::on_listObjects_clicked(const QModelIndex &index)
+{
+    QList<QListWidgetItem *> list = ui->listObjects->selectedItems();
+
+    if(list.count() == 1) {
+        ui->object_id->setText(list.at(0)->text());
+    }
 }
