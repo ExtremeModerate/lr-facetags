@@ -70,7 +70,7 @@ void Manager::changeImage() {
 
     for(std::vector<FaceObject>::iterator it = this->TagedElements.begin(); it != this->TagedElements.end(); ++it) {
         FaceObject fo = *it;
-        std::cerr << fo.objectID;
+        //std::cerr << fo.objectID;
         new QListWidgetItem(QString::fromStdString(fo.objectID), listObjects);
     }
 
