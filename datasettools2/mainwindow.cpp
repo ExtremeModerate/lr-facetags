@@ -103,7 +103,7 @@ void MainWindow::on_object_id_textChanged(const QString &arg1)
 
     std::vector<QPixmap> listCrops;
 
-    QString dir_name = "/home/daniel/BaoDataBase/myDataBase";
+    QString dir_name = Manager::exemplar()->selectedDirectory;//"/home/daniel/BaoDataBase/myDataBase";
     // collect all FaceObjects and imagees with the given id
     DIR *dir;
     struct dirent *ent;
