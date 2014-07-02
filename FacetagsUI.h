@@ -24,6 +24,7 @@ private slots:
   void detect();
   void openFolder();
   void saveLog();
+  void loadAllRuns();
 };
 
 #endif // FACETAGSUI_H

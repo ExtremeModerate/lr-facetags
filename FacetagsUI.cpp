@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
   connect(ui->pushDetect, SIGNAL(clicked()), this, SLOT(detect()));
   connect(ui->pushOpenFolder, SIGNAL(clicked()), this, SLOT(openFolder()));
   connect(ui->pushSaveLog, SIGNAL(clicked()), this, SLOT(saveLog()));
+  connect(ui->pushLoadAllRuns, SIGNAL(clicked()), this, SLOT(loadAllRuns()));
 }
 
 MainWindow::~MainWindow() {
@@ -69,6 +70,7 @@ void MainWindow::detect() {
     
   }
   ui->outputText->append("Detection done!");
+  ui->outputRuns->append(date);
 }
 
 void MainWindow::openFolder() {
@@ -87,4 +89,20 @@ void MainWindow::saveLog() {
   out << ui->outputText->document()->toHtml();
   file.close(); 
   }
+}
+
+void MainWindow::loadAllRuns() {
+  QString path = ui->inputPath->text() + "/metaface/";
+  cout << path.toUtf8().constData() << endl;
+
+  QStringList all_dirs;
+  all_dirs << path;
+  QDirIterator directories(path, QDir::Dirs | QDir::NoSymLinks | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+  while(directories.hasNext()) {
+    directories.next();
+    QString bla = directories.filePath();
+    cout << bla.toUtf8().constData() << endl;
+    all_dirs << directories.filePath();
+ }
+  
 }
