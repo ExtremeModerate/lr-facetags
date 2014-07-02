@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <iostream>
-#include "FacetagsUI.h"
+#include "MainUI.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])

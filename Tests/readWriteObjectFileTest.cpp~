@@ -5,7 +5,7 @@ using namespace std;
 int bla()
 {
 	vector<FaceObject> vfo;
-	
+	/*
 	FaceObject fo;
 	fo.objectType = otFace;
 	fo.objectID = 12345;
@@ -48,6 +48,6 @@ int bla()
 		printf("truncationLevel=%f\n",vfo2[i].truncationLevel);
 		printf("occlusionLevel=%i\n",vfo2[i].occlusionLevel);
 	}
-	
+	*/
 	return  0;
 }

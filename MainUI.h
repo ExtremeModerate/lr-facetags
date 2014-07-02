@@ -1,10 +1,12 @@
 // Copyright 2014, University of Freiburg, Machine Learning Lab
 // Authors: Daniel Leinfelder, Manuel Bühler, Christina Hernández Wunsch, Tobias Strickfaden
 
-#ifndef FACETAGSUI_H
-#define FACETAGSUI_H
+#ifndef MAINUI_H
+#define MAINUI_H
 
 #include <QMainWindow>
+
+extern QStringList benchmarkTargets;
 
 namespace Ui {
   class MainWindow;
@@ -25,6 +27,9 @@ private slots:
   void openFolder();
   void saveLog();
   void loadAllRuns();
+  void loadRun();
+  void compareDetection();
+  void compareRecognition();
 };
 
-#endif // FACETAGSUI_H
+#endif // MAINUI_H

@@ -2,7 +2,7 @@
 // Authors: Daniel Leinfelder, Manuel Bühler, Christina Hernández Wunsch, Tobias Strickfaden
 
 
-#include "FacetagsUI.h"
+#include "MainUI.h"
 #include "ui_mainwindow.h"
 #include <QString>
 #include <QFileDialog>
@@ -13,12 +13,13 @@
 #include <QTextBrowser>
 #include <QDateTime>
 #include <iostream>
-#include "./FacetagsDetection.h"
+#include "./Detection.h"
 #include "./readWriteObjectFile.h"
 #include "./FaceObject.h"
 
 using namespace std;
 
+QStringList benchmarkTargets;
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
@@ -28,6 +29,9 @@ MainWindow::MainWindow(QWidget *parent) :
   connect(ui->pushOpenFolder, SIGNAL(clicked()), this, SLOT(openFolder()));
   connect(ui->pushSaveLog, SIGNAL(clicked()), this, SLOT(saveLog()));
   connect(ui->pushLoadAllRuns, SIGNAL(clicked()), this, SLOT(loadAllRuns()));
+  connect(ui->pushLoadRun, SIGNAL(clicked()), this, SLOT(loadRun()));
+  connect(ui->pushCompareDetection, SIGNAL(clicked()), this, SLOT(compareDetection()));
+  connect(ui->pushCompareRecognition, SIGNAL(clicked()), this, SLOT(compareRecognition()));
 }
 
 MainWindow::~MainWindow() {
@@ -71,6 +75,7 @@ void MainWindow::detect() {
   }
   ui->outputText->append("Detection done!");
   ui->outputRuns->append(date);
+  benchmarkTargets << date;
 }
 
 void MainWindow::openFolder() {
@@ -82,27 +87,52 @@ void MainWindow::openFolder() {
 }
 
 void MainWindow::saveLog() {
-  // TODO
-  QFile file ("log.txt");
+  QString name = QFileDialog::getSaveFileName(this, "Save file", "", ".txt");
+  QFile file(name + ".txt");
   if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
   QTextStream out(&file);
-  out << ui->outputText->document()->toHtml();
+  out << ui->outputText->toPlainText();
   file.close(); 
   }
 }
 
 void MainWindow::loadAllRuns() {
   QString path = ui->inputPath->text() + "/metaface/";
-  cout << path.toUtf8().constData() << endl;
-
-  QStringList all_dirs;
-  all_dirs << path;
+  benchmarkTargets.clear();
+  ui->outputRuns->clear();  
   QDirIterator directories(path, QDir::Dirs | QDir::NoSymLinks | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
   while(directories.hasNext()) {
     directories.next();
-    QString bla = directories.filePath();
-    cout << bla.toUtf8().constData() << endl;
-    all_dirs << directories.filePath();
- }
-  
+    QStringList tmp = directories.filePath().split("/");
+    benchmarkTargets << tmp.value(tmp.length()-1);
+    ui->outputRuns->append(tmp.value(tmp.length()-1));
+  }
+}
+
+void MainWindow::loadRun() {
+  QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
+                                             "/home",
+                                             QFileDialog::ShowDirsOnly
+                                             | QFileDialog::DontResolveSymlinks);
+  QStringList tmp = dir.split("/");
+  benchmarkTargets << tmp.value(tmp.length()-1);
+  ui->outputRuns->append(tmp.value(tmp.length()-1));
+  benchmarkTargets.removeDuplicates();
+}
+
+void MainWindow::compareDetection() {
+  // TODO need benchmark algorithm
+  QString gTruth = ui->inputPath->text();
+  for (int i = 0; i < benchmarkTargets.size(); ++i) {
+    QString work = gTruth + "/" + benchmarkTargets.at(i);
+  }
+}
+
+void MainWindow::compareRecognition() {
+  // TODO need benchmark algorithm
+  QString gTruth = ui->inputPath->text();
+  for (int i = 0; i < benchmarkTargets.size(); ++i) {
+    QString work = gTruth + "/" + benchmarkTargets.at(i);
+    cout << work.toUtf8().constData() << endl;
+  }
 }
