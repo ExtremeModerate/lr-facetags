@@ -24,8 +24,11 @@ private:
 
 private slots:
   void detect();
+  void recognize();
   void openFolder();
   void saveLog();
+  void clearLog();
+  void clearRuns();
   void loadAllRuns();
   void loadRun();
   void compareDetection();

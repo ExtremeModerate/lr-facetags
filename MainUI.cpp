@@ -26,8 +26,11 @@ MainWindow::MainWindow(QWidget *parent) :
   ui(new Ui::MainWindow) {
   ui->setupUi(this);
   connect(ui->pushDetect, SIGNAL(clicked()), this, SLOT(detect()));
+  connect(ui->pushRecognize, SIGNAL(clicked()), this, SLOT(recognize()));
   connect(ui->pushOpenFolder, SIGNAL(clicked()), this, SLOT(openFolder()));
   connect(ui->pushSaveLog, SIGNAL(clicked()), this, SLOT(saveLog()));
+  connect(ui->pushClearA, SIGNAL(clicked()), this, SLOT(clearLog()));
+  connect(ui->pushClearB, SIGNAL(clicked()), this, SLOT(clearRuns()));
   connect(ui->pushLoadAllRuns, SIGNAL(clicked()), this, SLOT(loadAllRuns()));
   connect(ui->pushLoadRun, SIGNAL(clicked()), this, SLOT(loadRun()));
   connect(ui->pushCompareDetection, SIGNAL(clicked()), this, SLOT(compareDetection()));
@@ -78,6 +81,10 @@ void MainWindow::detect() {
   benchmarkTargets << date;
 }
 
+void MainWindow::recognize() {
+
+}
+
 void MainWindow::openFolder() {
   QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
                                              "/home",
@@ -94,6 +101,15 @@ void MainWindow::saveLog() {
   out << ui->outputText->toPlainText();
   file.close(); 
   }
+}
+
+void MainWindow::clearLog() {
+  ui->outputText->clear();
+}
+
+void MainWindow::clearRuns() {
+  benchmarkTargets.clear();
+  ui->outputRuns->clear();
 }
 
 void MainWindow::loadAllRuns() {
@@ -121,18 +137,20 @@ void MainWindow::loadRun() {
 }
 
 void MainWindow::compareDetection() {
-  // TODO need benchmark algorithm
+  // TODO 
   QString gTruth = ui->inputPath->text();
   for (int i = 0; i < benchmarkTargets.size(); ++i) {
     QString work = gTruth + "/" + benchmarkTargets.at(i);
   }
+  ui->outputText->append("not implemented yet, need benchmark algorithm");
 }
 
 void MainWindow::compareRecognition() {
-  // TODO need benchmark algorithm
+  // TODO 
   QString gTruth = ui->inputPath->text();
   for (int i = 0; i < benchmarkTargets.size(); ++i) {
     QString work = gTruth + "/" + benchmarkTargets.at(i);
     cout << work.toUtf8().constData() << endl;
   }
+  ui->outputText->append("not implemented yet, need benchmark algorithm");
 }
