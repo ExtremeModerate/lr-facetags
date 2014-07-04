@@ -7,6 +7,7 @@
 #include <QMainWindow>
 
 extern QStringList benchmarkTargets;
+extern std::string sDate;
 
 namespace Ui {
   class MainWindow;

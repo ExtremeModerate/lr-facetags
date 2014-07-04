@@ -20,6 +20,7 @@
 using namespace std;
 
 QStringList benchmarkTargets;
+string sDate;
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
@@ -45,7 +46,7 @@ MainWindow::~MainWindow() {
 void MainWindow::detect() {
   string sClassifier = ui->dropDownDetect->currentText().toUtf8().data();
   string sPath = ui->inputPath->text().toUtf8().constData();
-  string sFileName, sFullPath, sDate;
+  string sFileName, sFullPath;
 
   vector<FaceObject> faceObjects;
 
@@ -82,6 +83,11 @@ void MainWindow::detect() {
 }
 
 void MainWindow::recognize() {
+  string sClassifier = ui->dropDownRecognize->currentText().toUtf8().data();
+  string sPath = ui->inputPath->text().toUtf8().constData();
+  if (sDate.empty()) {
+    ui->outputText->append("Need to run Detection first!");
+  }
 
 }
 
