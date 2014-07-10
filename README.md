@@ -9,7 +9,6 @@ Makefile: compiling could throw some undefined reference errors to openCV functi
 
 the Makefile should look like this:
 all: Makefile $(TARGET)
-
 $(TARGET): ui_mainwindow.h $(OBJECTS)
 $(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(OBJCOMP) $(LIBS) `pkg-config --cflags --libs opencv`
 
