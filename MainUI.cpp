@@ -95,17 +95,24 @@ void MainWindow::recognize() {
   std::vector<std::vector<FaceObject> > faceObjects;
 
   // iterate through the previous detected Faces
-  dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot | QDir::NoSymLinks);
+  dir.setFilter(QDir::Files | QDir::NoDot | QDir::NoDotDot | QDir::NoSymLinks);
   QDirIterator it(dir);
   while(it.hasNext()) {
     it.next();
-    sFullPath = it.filePath().toUtf8().constData();
-    cout << sFullPath << endl;
-    faceObjects.push_back(readObjectFile(sFullPath));
+    cout << "reading file:  " << it.filePath().toUtf8().constData() << endl;
+    vector<FaceObject> objects = readObjectFile(it.filePath().toUtf8().constData());
+    faceObjects.push_back(objects);
+    
   }
-  if (sClassifier == "Eigenfaces openCV" || sClassifier == "Fisherfaces openCV" || sClassifier == "LBP Histograms openCV") {
+
+  cout << "loop done" << endl;
+  if (sClassifier == "Eigenfaces OpenCV" || 
+      sClassifier == "Fisherfaces OpenCV" || 
+      sClassifier == "LBP Histograms OpenCV") {
     recognizeOpenCV(faceObjects, sClassifier, sPath);
   }
+  //writeObjectFileVector(faceObjects, sFullPath);
+  ui->outputText->append("not implemented yet");
 }
 
 void MainWindow::openFolder() {

@@ -12,32 +12,36 @@ using namespace std;
 using namespace cv;
 
 void recognizeOpenCV(std::vector<std::vector<FaceObject> > & faceObjects, const std::string & classifier, const std::string & folder) {
-  if (classifier == "Eigenfaces openCV") {
-    Ptr<FaceRecognizer> model = createEigenFaceRecognizer();
+  Ptr<FaceRecognizer> model;
+  if (classifier == "Eigenfaces OpenCV") {
+    model = createEigenFaceRecognizer();
   }
-  else if (classifier == "Fisherfaces openCV") {
-    Ptr<FaceRecognizer> model = createFisherFaceRecognizer();
+  else if (classifier == "Fisherfaces OpenCV") {
+    model = createFisherFaceRecognizer();
   }
-  else if (classifier == "LBP Histograms openCV") {
-    Ptr<FaceRecognizer> model = createLBPHFaceRecognizer();
+  else if (classifier == "LBP Histograms OpenCV") {
+    model = createLBPHFaceRecognizer();
   }
   vector<Mat> images;
   vector<int> labels;
   vector<vector<int> > positions;
   Mat image;
   string file;
-
   int ctr = 1;
+  cout << "let the looping begin.................................." << endl;
   for (size_t i = faceObjects.size() - 1; i <= 0; i--) {
     for (size_t j = faceObjects[i].size() - 1; j <= 0; j--) {
       if (faceObjects[i][j].objectID == -1) {          
         file = folder + faceObjects[i][j].fileName;
         image = imread(file);
         faceObjects[i][j].objectID = ctr;
+        cout << "setting objectID: " << faceObjects[i][j].objectID << "to: " << i << j << endl;
         images.push_back(image);
         labels.push_back(ctr);
-        ctr++;     
+        ctr++;   
         model->train(images, labels);
+        
+          
       }
       // recognize all unknown faces with the newly trained model
       for (size_t i = faceObjects.size() - 1; i <= 0; i--) {
@@ -48,7 +52,7 @@ void recognizeOpenCV(std::vector<std::vector<FaceObject> > & faceObjects, const 
             int prediction = model->predict(image);
             faceObjects[i][j].objectID = prediction;
             images.push_back(image);
-            labels.push_back(prediction);    
+            labels.push_back(prediction);
           }
         }
       }

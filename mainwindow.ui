@@ -60,7 +60,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>/home/ubuntu/proj/Images</string>
+     <string>/home/ubuntu/lr-facetags/Images</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushOpenFolder">
@@ -125,6 +125,21 @@
       <height>27</height>
      </rect>
     </property>
+    <item>
+     <property name="text">
+      <string>Eigenfaces OpenCV</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>LBP Histograms OpenCV</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Fisherfaces OpenCV</string>
+     </property>
+    </item>
    </widget>
    <widget class="QPushButton" name="pushDetect">
     <property name="geometry">

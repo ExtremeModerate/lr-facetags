@@ -24,13 +24,14 @@ Example structure:
 
 In this files, each row defines an object in the following way:
 
-[ObjectType] [ObjectId] [x] [y] [width] [height] [truncated] [occluded]
+[fileName] [ObjectType] [ObjectId] [x] [y] [width] [height] [truncated] [occluded]
 
-e.G.: Face 000001 15 15 60 60 0.5 3
+e.G.: lara.jpg Face 000001 15 15 60 60 0.5 3
 
 The 8 columns represent:
 #Values    Name      Description
 ----------------------------------------------------------------------------
+   1    fileName     Name of the Image File
    1    ObjectType   Describes the type of object: 0 = Face, 1 = DontCareFace
    1    ObjectId     Identification for grouping the same faces
    4    bbox         2D bounding box of object in the image:
@@ -51,6 +52,8 @@ for example because they don't appear anywhere else in the dataset. */
 std::vector<FaceObject> readObjectFile(const std::string &sFilename);
 
 bool writeObjectFile(const std::vector<FaceObject> &vfo, const std::string &sPath, bool append=false);
+
+bool writeObjectFileVector(const std::vector<std::vector<FaceObject> > &vfo, const std::string &sFolder, bool append=false);
 
 
 #endif // READWRITEOBJECTFILE_H
