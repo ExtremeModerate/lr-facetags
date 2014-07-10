@@ -14,6 +14,7 @@
 #include <QDateTime>
 #include <iostream>
 #include "./Detection.h"
+#include "./RecognitionOpenCV.h"
 #include "./readWriteObjectFile.h"
 #include "./FaceObject.h"
 
@@ -58,7 +59,7 @@ void MainWindow::detect() {
   QString fullPath = dir.absolutePath();
 
 
-  // create subfolders
+  // create subfolder
   if (!QDir(path + "/metaface").exists()) {
     QDir().mkdir("metaface");
   }
@@ -66,14 +67,13 @@ void MainWindow::detect() {
   dirr.mkpath(fullPath + "/metaface/" + date +"/");
 
   // iterate through Image folder
-  dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
+  dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot | QDir::NoSymLinks);
   // add QDirIterator::Subdirectories as argument if you want to iterate trough subfolders
   QDirIterator it(dir);
   while(it.hasNext()) {
     it.next();
-    sFullPath = it.filePath().toUtf8().constData();
     sFileName = it.fileName().toUtf8().constData();
-    faceObjects = detectFaces(sFullPath, sClassifier);
+    faceObjects = detectFaces(sPath, sFileName, sClassifier);
     writeObjectFile(faceObjects, sPath + "/metaface/" + sDate + "/" + sFileName + ".txt");
     
   }
@@ -83,12 +83,29 @@ void MainWindow::detect() {
 }
 
 void MainWindow::recognize() {
-  string sClassifier = ui->dropDownRecognize->currentText().toUtf8().data();
-  string sPath = ui->inputPath->text().toUtf8().constData();
   if (sDate.empty()) {
     ui->outputText->append("Need to run Detection first!");
+    return;
   }
+  string sClassifier = ui->dropDownRecognize->currentText().toUtf8().data();
+  string sPath = ui->inputPath->text().toUtf8().constData();
+  string sFullPath = sPath + "/metaface/" + sDate;
+  QString path = sFullPath.c_str();
+  QDir dir = path;
+  std::vector<std::vector<FaceObject> > faceObjects;
 
+  // iterate through the previous detected Faces
+  dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot | QDir::NoSymLinks);
+  QDirIterator it(dir);
+  while(it.hasNext()) {
+    it.next();
+    sFullPath = it.filePath().toUtf8().constData();
+    cout << sFullPath << endl;
+    faceObjects.push_back(readObjectFile(sFullPath));
+  }
+  if (sClassifier == "Eigenfaces openCV" || sClassifier == "Fisherfaces openCV" || sClassifier == "LBP Histograms openCV") {
+    recognizeOpenCV(faceObjects, sClassifier, sPath);
+  }
 }
 
 void MainWindow::openFolder() {

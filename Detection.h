@@ -7,6 +7,6 @@
 #include "./FaceObject.h"
 
 // Detect Faces using the openCV Algorithm and a given Classifier
-std::vector<FaceObject> detectFaces(const std::string & path, const std::string & classifier);
+std::vector<FaceObject> detectFaces(const std::string & folder, const std::string & file, const std::string & classifier);
 
 #endif // DETECTION_H

@@ -4,6 +4,8 @@
 #ifndef FACEOBJECT_H
 #define FACEOBJECT_H
 
+#include <string>
+
 enum ObjectType {
 	otFace,
 	otDontCareFace
@@ -17,6 +19,7 @@ enum OcclusionLevel {
 };
 
 struct FaceObject {
+  std::string fileName;
 	ObjectType objectType;
 	OcclusionLevel occlusionLevel;
 	int objectID, x, y, width, height;

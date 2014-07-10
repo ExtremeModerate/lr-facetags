@@ -12,11 +12,12 @@ using namespace std;
 using namespace cv;
 
 // ____________________________________________________________________________
-std::vector<FaceObject> detectFaces(const string & path, const string & classifier)
+std::vector<FaceObject> detectFaces(const string & folder, const string & file, const string & classifier)
 {
   string face_cascade_name = "./Classifier/" + classifier + ".xml";
   CascadeClassifier face_cascade; 
-  face_cascade.load(face_cascade_name);  
+  face_cascade.load(face_cascade_name);
+  string path = folder + "/" + file;  
   Mat frame = imread(path);
   vector<Rect> faces;
   vector<FaceObject> faceObjects;
@@ -30,6 +31,7 @@ std::vector<FaceObject> detectFaces(const string & path, const string & classifi
 
     for (size_t i = 0; i < faces.size(); i++) {
       FaceObject faceObject;
+      faceObject.fileName = file;
       faceObject.x = faces[i].x;
       faceObject.y = faces[i].y;
       faceObject.width = faces[i].width;

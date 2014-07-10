@@ -10,6 +10,7 @@ std::vector<FaceObject> readObjectFile(const std::string &sFilename)
 	
 	while(ifObjFile) {
 		FaceObject fo;
+    ifObjFile >> fo.fileName;
 		ifObjFile >> iObjectType;
 		fo.objectType = static_cast<ObjectType>(iObjectType);
 		ifObjFile >> fo.objectID;
@@ -39,7 +40,8 @@ bool writeObjectFile(const std::vector<FaceObject> &vfo, const std::string &sPat
 		ofObjFile.open(sPath.c_str());
 	if(!ofObjFile) return false;
 	for(size_t i=0; i<vfo.size(); i++)	{
-		ofObjFile << static_cast<int>(vfo[i].objectType) << " ";
+    ofObjFile << vfo[i].fileName << " ";		
+    ofObjFile << static_cast<int>(vfo[i].objectType) << " ";
 		ofObjFile << vfo[i].objectID << " ";
 		ofObjFile << vfo[i].x << " ";
 		ofObjFile << vfo[i].y << " ";
