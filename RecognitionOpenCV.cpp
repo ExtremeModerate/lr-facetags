@@ -27,34 +27,59 @@ void recognizeOpenCV(std::vector<std::vector<FaceObject> > & faceObjects, const 
   vector<vector<int> > positions;
   Mat image;
   string file;
-  int ctr = 1;
-  cout << "let the looping begin.................................." << endl;
-  for (size_t i = faceObjects.size() - 1; i <= 0; i--) {
-    for (size_t j = faceObjects[i].size() - 1; j <= 0; j--) {
+  int ctr = 1, prediction;
+  double confidence;
+  for (size_t i = 0; i < faceObjects.size(); i++) {
+    for (size_t j = 0; j < faceObjects[i].size(); j++) {
       if (faceObjects[i][j].objectID == -1) {          
         file = folder + faceObjects[i][j].fileName;
         image = imread(file);
-        faceObjects[i][j].objectID = ctr;
-        cout << "setting objectID: " << faceObjects[i][j].objectID << "to: " << i << j << endl;
-        images.push_back(image);
-        labels.push_back(ctr);
-        ctr++;   
-        model->train(images, labels);
-        
+        if (!image.empty()) {
+          // crop the face
+          Rect myROI(faceObjects[i][j].x, faceObjects[i][j].y, faceObjects[i][j].width, faceObjects[i][j].height);
+          image = image(myROI);
+
+          // convert to grayscale
+          Mat image_gray;
+          cvtColor(image, image_gray, COLOR_BGR2GRAY);
+          equalizeHist(image_gray, image_gray);
+
+
           
-      }
-      // recognize all unknown faces with the newly trained model
-      for (size_t i = faceObjects.size() - 1; i <= 0; i--) {
-        for (size_t j = faceObjects[i].size() - 1; j <= 0; j--) {
-          if (faceObjects[i][j].objectID == -1) {
-            file = folder + faceObjects[i][j].fileName;
-            image = imread(file);
-            int prediction = model->predict(image);
-            faceObjects[i][j].objectID = prediction;
-            images.push_back(image);
-            labels.push_back(prediction);
-          }
+          faceObjects[i][j].objectID = ctr;
+          cout<<"creating new objectID: "<<faceObjects[i][j].objectID<<" for "<<faceObjects[i][j].fileName<<" face "<<j<< endl;
+          images.push_back(image_gray);
+          labels.push_back(ctr);
+          ctr++;   
+          model->train(images, labels);
         }
+        // recognize all unknown faces with the newly trained model
+        for (size_t k = 0; k < faceObjects.size(); k++) {
+          for (size_t l = 0; l < faceObjects[k].size(); l++) {
+            if (faceObjects[k][l].objectID == -1) { 
+              file = folder + faceObjects[k][l].fileName;
+              image = imread(file);
+              if (!image.empty()) {
+                // crop the face
+                Rect myROI(faceObjects[k][l].x, faceObjects[k][l].y, faceObjects[k][l].width, faceObjects[k][l].height);
+                image = image(myROI);
+
+                // convert to grayscale
+                Mat image_gray;
+                cvtColor(image, image_gray, COLOR_BGR2GRAY);
+                equalizeHist(image_gray, image_gray);
+
+                model->predict(image_gray, prediction, confidence);
+                if (confidence > 300) {
+                  faceObjects[k][l].objectID = prediction;
+                  images.push_back(image_gray);
+                  labels.push_back(prediction);
+                  cout << faceObjects[k][l].fileName<<" face: "<<l<<" recognized objectID: "<<faceObjects[k][l].objectID<<" confidence: " << confidence << endl;
+                }
+              }
+            }
+          }
+        }          
       }
     }    
   } 

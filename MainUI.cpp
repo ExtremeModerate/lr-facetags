@@ -105,14 +105,13 @@ void MainWindow::recognize() {
     
   }
 
-  cout << "loop done" << endl;
   if (sClassifier == "Eigenfaces OpenCV" || 
       sClassifier == "Fisherfaces OpenCV" || 
       sClassifier == "LBP Histograms OpenCV") {
-    recognizeOpenCV(faceObjects, sClassifier, sPath);
+    recognizeOpenCV(faceObjects, sClassifier, sPath + "/");
   }
-  //writeObjectFileVector(faceObjects, sFullPath);
-  ui->outputText->append("not implemented yet");
+  writeObjectFileVector(faceObjects, sFullPath);
+  ui->outputText->append("Recognition Done!");
 }
 
 void MainWindow::openFolder() {

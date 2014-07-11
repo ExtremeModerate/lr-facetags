@@ -127,12 +127,12 @@
     </property>
     <item>
      <property name="text">
-      <string>Eigenfaces OpenCV</string>
+      <string>LBP Histograms OpenCV</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>LBP Histograms OpenCV</string>
+      <string>Eigenfaces OpenCV</string>
      </property>
     </item>
     <item>

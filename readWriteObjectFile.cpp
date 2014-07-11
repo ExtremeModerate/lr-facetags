@@ -1,4 +1,5 @@
 #include "readWriteObjectFile.h"
+#include <iostream>
 // ______________________________________________________________________________________________
 std::vector<FaceObject> readObjectFile(const std::string &sFilename)
 {
@@ -59,17 +60,19 @@ bool writeObjectFile(const std::vector<FaceObject> &vfo, const std::string &sPat
 bool writeObjectFileVector(const std::vector<std::vector<FaceObject> > &vfo, const std::string &sFolder, bool append)
 {
   std::ofstream ofObjFile;
-  std::string fullPath, fileName;  
+  std::string fullPath;  
   for (size_t j = 0; j < vfo.size(); j++) {
-    fileName = vfo[j].front().fileName;
-    fullPath = sFolder + fileName;
+    if (vfo[j].size() > 0) {
+    fullPath = sFolder + "/" + vfo[j][0].fileName + ".txt";
+    std::cout << fullPath << std::endl;
 	  ofObjFile.clear();
 	  if(append)
 		  ofObjFile.open(fullPath.c_str(), std::ofstream::app);
 	  else
 		  ofObjFile.open(fullPath.c_str());
-	  if(!ofObjFile) return false;
+	  if(!ofObjFile) continue;
 	  for(size_t i=0; i<vfo[j].size(); i++)	{
+      std::cout << vfo[j][i].objectID << std::endl;
       ofObjFile << vfo[j][i].fileName << " ";		
       ofObjFile << static_cast<int>(vfo[j][i].objectType) << " ";
 		  ofObjFile << vfo[j][i].objectID << " ";
@@ -81,9 +84,10 @@ bool writeObjectFileVector(const std::vector<std::vector<FaceObject> > &vfo, con
 		  ofObjFile << static_cast<int>(vfo[j][i].occlusionLevel);
 		  ofObjFile << std::endl;
 	   }
-	
-	   if(!ofObjFile) return false;
+	   ofObjFile.close();
+	   if(!ofObjFile) continue;
 	   ofObjFile.flush();
-	  }
-	return true;
- }
+	  }	  
+  }
+  return true;
+}
