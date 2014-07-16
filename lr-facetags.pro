@@ -12,7 +12,8 @@ HEADERS += Detection.h \
            FaceObject.h \
            MainUI.h \
            readWriteObjectFile.h \
-           RecognitionOpenCV.h
+           RecognitionOpenCV.h \
+    benchmark.h
 FORMS += mainwindow.ui
 SOURCES += Detection.cpp \
            FaceObject.cpp \
@@ -20,4 +21,5 @@ SOURCES += Detection.cpp \
            MainUI.cpp \
            readWriteObjectFile.cpp \
            RecognitionOpenCV.cpp \
-           Tests/readWriteObjectFileTest.cpp
+           Tests/readWriteObjectFileTest.cpp \
+    benchmark.cpp

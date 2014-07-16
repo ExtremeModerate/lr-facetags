@@ -17,6 +17,7 @@
 #include "./RecognitionOpenCV.h"
 #include "./readWriteObjectFile.h"
 #include "./FaceObject.h"
+#include "benchmark.h"
 
 using namespace std;
 
@@ -79,7 +80,8 @@ void MainWindow::detect() {
   }
   ui->outputText->append("Detection done!");
   ui->outputRuns->append(date);
-  benchmarkTargets << date;
+  //benchmarkTargets << date;
+  benchmarkTargets << (sPath + "/metaface/" + sDate).c_str();
 }
 
 void MainWindow::recognize() {
@@ -115,8 +117,10 @@ void MainWindow::recognize() {
 }
 
 void MainWindow::openFolder() {
-  QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
-                                             "/home",
+    QString currentDir = ui->inputPath->text();
+    if(!QDir(currentDir).exists()) currentDir = "/home";
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
+                                             currentDir,
                                              QFileDialog::ShowDirsOnly
                                              | QFileDialog::DontResolveSymlinks);
   ui->inputPath->setText(dir);
@@ -149,37 +153,49 @@ void MainWindow::loadAllRuns() {
   while(directories.hasNext()) {
     directories.next();
     QStringList tmp = directories.filePath().split("/");
-    benchmarkTargets << tmp.value(tmp.length()-1);
+    //benchmarkTargets << tmp.value(tmp.length()-1);
+	benchmarkTargets << directories.filePath();
     ui->outputRuns->append(tmp.value(tmp.length()-1));
   }
 }
 
 void MainWindow::loadRun() {
+    QString currentDir = ui->inputPath->text();
+    if(!QDir(currentDir).exists()) currentDir = "/home";
   QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
-                                             "/home",
+                                             currentDir,
                                              QFileDialog::ShowDirsOnly
                                              | QFileDialog::DontResolveSymlinks);
   QStringList tmp = dir.split("/");
-  benchmarkTargets << tmp.value(tmp.length()-1);
+  //benchmarkTargets << tmp.value(tmp.length()-1);
+  benchmarkTargets << dir;
   ui->outputRuns->append(tmp.value(tmp.length()-1));
+  sDate = tmp.value(tmp.length()-1).toAscii().data();
   benchmarkTargets.removeDuplicates();
 }
 
 void MainWindow::compareDetection() {
-  // TODO 
-  QString gTruth = ui->inputPath->text();
+	ui->outputText->append("begin compareDetection()");
+  QString gTruth = ui->inputPath->text() + "/.metaface";
   for (int i = 0; i < benchmarkTargets.size(); ++i) {
-    QString work = gTruth + "/" + benchmarkTargets.at(i);
+	QString work = benchmarkTargets.at(i);
+    ui->outputText->append(work);
+    //benchmarkResult bRes = benchmark(work.toAscii().data(), gTruth.toAscii().data(), 0.5, false);
+    benchmarkResult bRes = benchmarkDetection(work.toAscii().data(), gTruth.toAscii().data(), 0.5);
+    ui->outputText->append(bRes.toString().c_str());
   }
-  ui->outputText->append("not implemented yet, need benchmark algorithm");
+  ui->outputText->append("end compareDetection()");
 }
 
 void MainWindow::compareRecognition() {
-  // TODO 
-  QString gTruth = ui->inputPath->text();
+  // TODO: Find bug in benchmarkRecognition ?
+    ui->outputText->append("begin compareRecognition()");
+  QString gTruth = ui->inputPath->text() + "/.metaface";
   for (int i = 0; i < benchmarkTargets.size(); ++i) {
-    QString work = gTruth + "/" + benchmarkTargets.at(i);
-    cout << work.toUtf8().constData() << endl;
+    QString work = benchmarkTargets.at(i);
+    ui->outputText->append(work);
+    benchmarkResult bRes = benchmarkRecognition(work.toAscii().data(), gTruth.toAscii().data(), 0.5);
+    ui->outputText->append(bRes.toString().c_str());
   }
-  ui->outputText->append("not implemented yet, need benchmark algorithm");
+  ui->outputText->append("end compareRecognition()");
 }

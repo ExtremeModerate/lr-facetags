@@ -19,7 +19,7 @@ enum OcclusionLevel {
 };
 
 struct FaceObject {
-  std::string fileName;
+    std::string fileName;
 	ObjectType objectType;
 	OcclusionLevel occlusionLevel;
 	int objectID, x, y, width, height;

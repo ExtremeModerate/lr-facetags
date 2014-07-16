@@ -11,8 +11,17 @@
 #include <QDir>
 #include <QDirIterator>
 #include <map>
+#include <sstream>
 
 #include "readWriteObjectFile.h"
+
+struct benchmarkResult
+{
+    benchmarkResult();
+    std::string toString();
+    int truePositives, falsePositives, falseNegatives;
+    double precision, recall;
+};
 
 double precision(int truePositives, int falsePositives);
 double recall(int truePositives, int falseNegatives);
@@ -22,8 +31,14 @@ double getOverlapAbs(const FaceObject &fo1, const FaceObject &fo2);
 // Computes relative overlap of two FaceObjects
 double getOverlapRel(const FaceObject &fo1, const FaceObject &fo2);
 // Compares algo and ground truth.
+// sAlgo: Directory of face object files of algorithm
+// sGrndtr: Directory of face object files of ground truth.
 // threshold: range 0 to 1. Face is a True Positive, if overlap >= threshold.
-// useIDs: Whether to run benchmark for detection or recognition.
-void benchmark(const std::string &sAlgo, const std::string &sGrndtr, double threshold, bool useIDs);
+benchmarkResult benchmarkDetection(const std::string &sAlgo, const std::string &sGrndtr, double threshold);
+benchmarkResult benchmarkRecognition(const std::string &sAlgo, const std::string &sGrndtr, double threshold);
+
+// Help functions
+void openLogfile(std::ofstream &ofLog, const std::string &sAlgo, const std::string &sGrndtr, double threshold, const std::string &sFunction);
+void writeSummaryToLogFile(std::ofstream &ofLog, const benchmarkResult &bRes, int iNumFacesGrndtr, int iNumFacesAlgo);
 
 #endif
