@@ -80,7 +80,6 @@ void MainWindow::detect() {
   }
   ui->outputText->append("Detection done!");
   ui->outputRuns->append(date);
-  //benchmarkTargets << date;
   benchmarkTargets << (sPath + "/metaface/" + sDate).c_str();
 }
 
@@ -112,8 +111,15 @@ void MainWindow::recognize() {
       sClassifier == "LBP Histograms OpenCV") {
     recognizeOpenCV(faceObjects, sClassifier, sPath + "/");
   }
+  QDateTime dateTime;
+  QString date = dateTime.currentDateTime().toString();
+  sDate = dateTime.currentDateTime().toString().toUtf8().constData();
+  sFullPath = sPath + "/metaface/" + sDate;
   writeObjectFileVector(faceObjects, sFullPath);
+  
   ui->outputText->append("Recognition Done!");
+  ui->outputRuns->append(date);
+  benchmarkTargets << (sPath + "/metaface/" + sDate).c_str();
 }
 
 void MainWindow::openFolder() {
