@@ -5,8 +5,6 @@ lr-facetags
 
 Requirements: OpenCV, QT
 
-Makefile: compiling could throw some undefined reference errors to openCV functions, then you have to add 'pkg-config --cflags --libs opencv' to the Makefile at line 115
-
 
 
 
