@@ -125,7 +125,7 @@ void MainWindow::recognize() {
         equalizeHist(image, image);
          
         // resize to 100x100
-        //cv::resize(temp, image, size);
+        cv::resize(image, image, size);
 
         faceObjects[i][j].image = image;
       }
@@ -134,10 +134,10 @@ void MainWindow::recognize() {
 
   // start the chosen recognition method
   if (sClassifier == "Eigenfaces OpenCV") {
-    //recognizeEigenfacesOpenCV(faceObjects);
+    recognizeEigenfacesOpenCV(faceObjects);
   } 
   else if (sClassifier == "Fisherfaces OpenCV") {
-    //recognizeFisherfacesOpenCV(faceObjects);
+    recognizeFisherfacesOpenCV(faceObjects);
   }
   else if (sClassifier == "LBP Histograms OpenCV") {
     recognizeLBPHistogramsOpenCV(faceObjects);
