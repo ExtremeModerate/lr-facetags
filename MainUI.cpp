@@ -13,6 +13,8 @@
 #include <QTextBrowser>
 #include <QDateTime>
 #include <iostream>
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
 #include "./Detection.h"
 #include "./RecognitionOpenCV.h"
 #include "./readWriteObjectFile.h"
@@ -20,9 +22,10 @@
 #include "benchmark.h"
 
 using namespace std;
+using namespace cv;
 
-QStringList benchmarkTargets;
-string sDate;
+QStringList benchmarkTargets; // list of targets for benchmarking
+string sDate; // timestamp of the last detection run
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
@@ -46,28 +49,27 @@ MainWindow::~MainWindow() {
 
 
 void MainWindow::detect() {
-  string sClassifier = ui->dropDownDetect->currentText().toUtf8().data();
-  string sPath = ui->inputPath->text().toUtf8().constData();
   string sFileName, sFullPath;
-
   vector<FaceObject> faceObjects;
 
-  QDateTime dateTime;
-  QString date = dateTime.currentDateTime().toString();
-  sDate = dateTime.currentDateTime().toString().toUtf8().constData();
+  // parse arguments
+  string sClassifier = ui->dropDownDetect->currentText().toUtf8().data();
+  string sPath = ui->inputPath->text().toUtf8().constData();
+
+  // create subfolder with a timestamp
   QString path = ui->inputPath->text();
   QDir dir = path;
   QString fullPath = dir.absolutePath();
-
-
-  // create subfolder
+  QDateTime dateTime;
+  QString date = dateTime.currentDateTime().toString();
+  sDate = dateTime.currentDateTime().toString().toUtf8().constData();
   if (!QDir(path + "/metaface").exists()) {
     QDir().mkdir("metaface");
   }
   QDir dirr = QDir::root(); 
   dirr.mkpath(fullPath + "/metaface/" + date +"/");
 
-  // iterate through Image folder
+  // iterate through image folder and run detection on each image
   dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot | QDir::NoSymLinks);
   // add QDirIterator::Subdirectories as argument if you want to iterate trough subfolders
   QDirIterator it(dir);
@@ -78,48 +80,76 @@ void MainWindow::detect() {
     writeObjectFile(faceObjects, sPath + "/metaface/" + sDate + "/" + sFileName + ".txt");
     
   }
+
   ui->outputText->append("Detection done!");
-  ui->outputRuns->append(date);
-  benchmarkTargets << (sPath + "/metaface/" + sDate).c_str();
 }
 
 void MainWindow::recognize() {
+  // check if detection has been run
   if (sDate.empty()) {
     ui->outputText->append("Need to run Detection first!");
     return;
   }
+
+  // parse arguments
   string sClassifier = ui->dropDownRecognize->currentText().toUtf8().data();
   string sPath = ui->inputPath->text().toUtf8().constData();
   string sFullPath = sPath + "/metaface/" + sDate;
-  QString path = sFullPath.c_str();
-  QDir dir = path;
-  std::vector<std::vector<FaceObject> > faceObjects;
 
   // iterate through the previous detected Faces
+  std::vector<std::vector<FaceObject> > faceObjects;
+  QString path = sFullPath.c_str();
+  QDir dir = path;
   dir.setFilter(QDir::Files | QDir::NoDot | QDir::NoDotDot | QDir::NoSymLinks);
   QDirIterator it(dir);
   while(it.hasNext()) {
     it.next();
-    cout << "reading file:  " << it.filePath().toUtf8().constData() << endl;
     vector<FaceObject> objects = readObjectFile(it.filePath().toUtf8().constData());
-    faceObjects.push_back(objects);
-    
+    faceObjects.push_back(objects);   
+  }
+  // edit faces for usage and save them to the faceObjects
+  Mat image, temp;
+  Size size(100,100);
+  for (size_t i = 0; i < faceObjects.size(); i++) {
+    for (size_t j = 0; j < faceObjects[i].size(); j++) {
+      string file = sPath + "/" + faceObjects[i][j].fileName;
+      cout << file << endl;
+      image = imread(file);
+      if (!image.empty()) {
+        // crop the face
+        Rect crop(faceObjects[i][j].x, faceObjects[i][j].y, faceObjects[i][j].width, faceObjects[i][j].height);
+        image = image(crop);
+
+        // convert to grayscale
+        cvtColor(image, image, COLOR_BGR2GRAY);
+        equalizeHist(image, image);
+         
+        // resize to 100x100
+        //cv::resize(temp, image, size);
+
+        faceObjects[i][j].image = image;
+      }
+    }
   }
 
-  if (sClassifier == "Eigenfaces OpenCV" || 
-      sClassifier == "Fisherfaces OpenCV" || 
-      sClassifier == "LBP Histograms OpenCV") {
-    recognizeOpenCV(faceObjects, sClassifier, sPath + "/");
+  // start the chosen recognition method
+  if (sClassifier == "Eigenfaces OpenCV") {
+    //recognizeEigenfacesOpenCV(faceObjects);
+  } 
+  else if (sClassifier == "Fisherfaces OpenCV") {
+    //recognizeFisherfacesOpenCV(faceObjects);
   }
+  else if (sClassifier == "LBP Histograms OpenCV") {
+    recognizeLBPHistogramsOpenCV(faceObjects);
+  }
+
+  // get a new timestamp and save the results
   QDateTime dateTime;
   QString date = dateTime.currentDateTime().toString();
-  sDate = dateTime.currentDateTime().toString().toUtf8().constData();
-  sFullPath = sPath + "/metaface/" + sDate;
+  sFullPath = sPath + "/metaface/" + dateTime.currentDateTime().toString().toUtf8().constData();
   writeObjectFileVector(faceObjects, sFullPath);
-  
+
   ui->outputText->append("Recognition Done!");
-  ui->outputRuns->append(date);
-  benchmarkTargets << (sPath + "/metaface/" + sDate).c_str();
 }
 
 void MainWindow::openFolder() {
@@ -160,7 +190,7 @@ void MainWindow::loadAllRuns() {
     directories.next();
     QStringList tmp = directories.filePath().split("/");
     //benchmarkTargets << tmp.value(tmp.length()-1);
-	benchmarkTargets << directories.filePath();
+	  benchmarkTargets << directories.filePath();
     ui->outputRuns->append(tmp.value(tmp.length()-1));
   }
 }

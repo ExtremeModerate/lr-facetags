@@ -1,7 +1,7 @@
 #include "./FaceObject.h"
 
 FaceObject::FaceObject() {
-    fileName = "unknown";
+  fileName = "unknown";
 	objectType = otDontCareFace;
 	occlusionLevel = olUnknown;
 	objectID = -1;

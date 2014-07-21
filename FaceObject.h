@@ -5,6 +5,8 @@
 #define FACEOBJECT_H
 
 #include <string>
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
 
 enum ObjectType {
 	otFace,
@@ -24,7 +26,7 @@ struct FaceObject {
 	OcclusionLevel occlusionLevel;
 	int objectID, x, y, width, height;
 	float truncationLevel;
-	
+	cv::Mat image; 
 	FaceObject();
 }; 
 
