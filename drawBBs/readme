@@ -1,0 +1,25 @@
+drawBBs
+=======
+
+Compile:
+qmake-qt4
+make
+
+Example usage: 
+See drawBBs.sh and adapt paths.
+
+Description:
+        Draws boxes to images. Images with boxes will be stored in <imagesFolder>/bb/.
+
+Usage:
+        drawBBs [OPTIONS] <imagesFolder> <FaceObjectFolder>
+
+OPTIONS:
+        -r<int> Red value of color (0-255)
+        -g<int> Green value of color (0-255)
+        -b<int> Blue value of color (0-255)
+        -a      Add boxes to existing images
+
+<imagesFolder>: Path to folder where source images are stored.
+<FaceObjectFolder>: Path to folder where FaceObject files are stored.
+
