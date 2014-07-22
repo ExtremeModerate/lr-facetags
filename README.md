@@ -5,7 +5,9 @@ lr-facetags
 
 Requirements: OpenCV, QT
 
-
+1. qmake
+2. make
+3. ./lr-facetags
 
 
 # Usage
