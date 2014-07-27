@@ -7,6 +7,8 @@ lr-facetags
 1. apt-get install libopencv-dev
 2. apt-get install qt4-dev-tools
 
+If OpenCV dose not contain the "-lopencv_nonfree" lib compile it yourself. You can check the available libs with: pkg-config --libs opencv
+
 
 ## Build:
 1. export QT_SELECT=4
