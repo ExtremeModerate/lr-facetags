@@ -3,11 +3,16 @@ lr-facetags
 
 # Installation
 
-Requirements: OpenCV, QT
+## Requirements: OpenCV, QT
+1. apt-get install libopencv-dev
+2. apt-get install qt4-dev-tools
 
-1. qmake
-2. make
-3. ./lr-facetags
+
+## Build:
+1. export QT_SELECT=4
+2. qmake
+3. make
+4. ./lr-facetags
 
 
 # Usage
