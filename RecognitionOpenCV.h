@@ -6,10 +6,10 @@
 
 #include "./FaceObject.h"
 
-void recognizeLBPHistogramsOpenCV(std::vector<std::vector<FaceObject> > & faceObjects);
+void recognizeLBPHistogramsOpenCV(std::vector<std::vector<FaceObject> > & faceObjects, std::vector<cv::Mat> images, std::vector<int> labels);
 
-void recognizeFisherfacesOpenCV(std::vector<std::vector<FaceObject> > & faceObjects);
+void recognizeFisherfacesOpenCV(std::vector<std::vector<FaceObject> > & faceObjects, std::vector<cv::Mat> images, std::vector<int> labels);
 
-void recognizeEigenfacesOpenCV(std::vector<std::vector<FaceObject> > & faceObjects);
+void recognizeEigenfacesOpenCV(std::vector<std::vector<FaceObject> > & faceObjects, std::vector<cv::Mat> images, std::vector<int> labels);
 
 #endif // RECOGNITIONOPENCV_H

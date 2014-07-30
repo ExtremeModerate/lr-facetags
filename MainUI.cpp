@@ -12,9 +12,8 @@
 #include <QTextStream>
 #include <QTextBrowser>
 #include <QDateTime>
+#include <QEventLoop>
 #include <iostream>
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
 #include "./Detection.h"
 #include "./RecognitionOpenCV.h"
 #include "./readWriteObjectFile.h"
@@ -25,7 +24,7 @@ using namespace std;
 using namespace cv;
 
 QStringList benchmarkTargets; // list of targets for benchmarking
-string sDate; // timestamp of the last detection run
+string sTimestamp; // timestamp with chosen method of the last detection/recognition run
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
@@ -56,18 +55,20 @@ void MainWindow::detect() {
   string sClassifier = ui->dropDownDetect->currentText().toUtf8().data();
   string sPath = ui->inputPath->text().toUtf8().constData();
 
-  // create subfolder with a timestamp
+  // create subfolder with a timestamp and chosen classifiern
   QString path = ui->inputPath->text();
   QDir dir = path;
   QString fullPath = dir.absolutePath();
-  QDateTime dateTime;
-  QString date = dateTime.currentDateTime().toString();
-  sDate = dateTime.currentDateTime().toString().toUtf8().constData();
   if (!QDir(path + "/metaface").exists()) {
     QDir().mkdir("metaface");
   }
-  QDir dirr = QDir::root(); 
-  dirr.mkpath(fullPath + "/metaface/" + date +"/");
+  QDateTime dateTime;
+  QString date = dateTime.currentDateTime().toString();
+  sTimestamp = dateTime.currentDateTime().toString().toUtf8().constData();
+  sTimestamp = sTimestamp + "_" + sClassifier;
+  QDir dirr = QDir::root();
+  QString timestamp = QString::fromStdString(sTimestamp);
+  dirr.mkpath(fullPath + "/metaface/" + timestamp +"/");
 
   // iterate through image folder and run detection on each image
   dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot | QDir::NoSymLinks);
@@ -77,7 +78,7 @@ void MainWindow::detect() {
     it.next();
     sFileName = it.fileName().toUtf8().constData();
     faceObjects = detectFaces(sPath, sFileName, sClassifier);
-    writeObjectFile(faceObjects, sPath + "/metaface/" + sDate + "/" + sFileName + ".txt");
+    writeObjectFile(faceObjects, sPath + "/metaface/" + sTimestamp + "/"  + sFileName + ".txt");
     
   }
 
@@ -86,7 +87,7 @@ void MainWindow::detect() {
 
 void MainWindow::recognize() {
   // check if detection has been run
-  if (sDate.empty()) {
+  if (sTimestamp.empty()) {
     ui->outputText->append("Need to run Detection first!");
     return;
   }
@@ -94,7 +95,8 @@ void MainWindow::recognize() {
   // parse arguments
   string sClassifier = ui->dropDownRecognize->currentText().toUtf8().data();
   string sPath = ui->inputPath->text().toUtf8().constData();
-  string sFullPath = sPath + "/metaface/" + sDate;
+  string sFullPath = sPath + "/metaface/" + sTimestamp;
+  int sizeTrainingSet = ui->spinBoxTrainingSet->value();
 
   // iterate through the previous detected Faces
   std::vector<std::vector<FaceObject> > faceObjects;
@@ -107,14 +109,16 @@ void MainWindow::recognize() {
     vector<FaceObject> objects = readObjectFile(it.filePath().toUtf8().constData());
     faceObjects.push_back(objects);   
   }
+
   // edit faces for usage and save them to the faceObjects
-  Mat image, temp;
+  int counter = 0;
   Size size(100,100);
+  vector<Mat> trainingImages;
+  vector<int> trainingLabels;
   for (size_t i = 0; i < faceObjects.size(); i++) {
     for (size_t j = 0; j < faceObjects[i].size(); j++) {
       string file = sPath + "/" + faceObjects[i][j].fileName;
-      cout << file << endl;
-      image = imread(file);
+      Mat image = imread(file);
       if (!image.empty()) {
         // crop the face
         Rect crop(faceObjects[i][j].x, faceObjects[i][j].y, faceObjects[i][j].width, faceObjects[i][j].height);
@@ -128,26 +132,48 @@ void MainWindow::recognize() {
         cv::resize(image, image, size);
 
         faceObjects[i][j].image = image;
+
+        // open dialog to tag the training set
+        if (counter < sizeTrainingSet) {
+          TagTrainingSetDialog tagDialog;
+          tagDialog.setImage(image);
+          tagDialog.exec();
+          int tag = tagDialog.getTag();
+          faceObjects[i][j].objectID = tag;
+          trainingImages.push_back(image);
+          trainingLabels.push_back(tag);
+          counter++;
+
+        }
       }
     }
   }
 
   // start the chosen recognition method
   if (sClassifier == "Eigenfaces OpenCV") {
-    recognizeEigenfacesOpenCV(faceObjects);
+    recognizeEigenfacesOpenCV(faceObjects, trainingImages, trainingLabels);
   } 
   else if (sClassifier == "Fisherfaces OpenCV") {
-    recognizeFisherfacesOpenCV(faceObjects);
+    recognizeFisherfacesOpenCV(faceObjects, trainingImages, trainingLabels);
   }
   else if (sClassifier == "LBP Histograms OpenCV") {
-    recognizeLBPHistogramsOpenCV(faceObjects);
+    recognizeLBPHistogramsOpenCV(faceObjects, trainingImages, trainingLabels);
   }
 
-  // get a new timestamp and save the results
+  // get a new timestamp, create a subfolder in metaface/ and save the results
+  path = ui->inputPath->text();
+  dir = path;
   QDateTime dateTime;
   QString date = dateTime.currentDateTime().toString();
-  sFullPath = sPath + "/metaface/" + dateTime.currentDateTime().toString().toUtf8().constData();
-  writeObjectFileVector(faceObjects, sFullPath);
+  QDir dirr = QDir::root();
+  sTimestamp = dateTime.currentDateTime().toString().toUtf8().constData();
+  sTimestamp = sTimestamp + "_" + sClassifier;
+  QString timestamp = QString::fromStdString(sTimestamp);
+  path = dir.absolutePath() + "/metaface/" + timestamp;
+  cout << path.toUtf8().constData() << endl;
+  dirr.mkpath(path);
+
+  writeObjectFileVector(faceObjects, path.toUtf8().constData());
 
   ui->outputText->append("Recognition Done!");
 }
@@ -196,8 +222,8 @@ void MainWindow::loadAllRuns() {
 }
 
 void MainWindow::loadRun() {
-    QString currentDir = ui->inputPath->text();
-    if(!QDir(currentDir).exists()) currentDir = "/home";
+  QString currentDir = ui->inputPath->text();
+  if(!QDir(currentDir).exists()) currentDir = "/home";
   QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
                                              currentDir,
                                              QFileDialog::ShowDirsOnly
@@ -206,7 +232,6 @@ void MainWindow::loadRun() {
   //benchmarkTargets << tmp.value(tmp.length()-1);
   benchmarkTargets << dir;
   ui->outputRuns->append(tmp.value(tmp.length()-1));
-  sDate = tmp.value(tmp.length()-1).toAscii().data();
   benchmarkTargets.removeDuplicates();
 }
 

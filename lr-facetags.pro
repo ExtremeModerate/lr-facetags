@@ -27,8 +27,10 @@ HEADERS += benchmark.h \
            FaceObject.h \
            MainUI.h \
            readWriteObjectFile.h \
-           RecognitionOpenCV.h
-FORMS += mainwindow.ui
+           RecognitionOpenCV.h \
+    TagTrainingSetDialog.h
+FORMS += mainwindow.ui \
+    TagTrainingSetDialog.ui
 SOURCES += benchmark.cpp \
            Detection.cpp \
            FaceObject.cpp \
@@ -36,4 +38,5 @@ SOURCES += benchmark.cpp \
            MainUI.cpp \
            readWriteObjectFile.cpp \
            RecognitionOpenCV.cpp \
-           Tests/readWriteObjectFileTest.cpp
+           Tests/readWriteObjectFileTest.cpp \
+    TagTrainingSetDialog.cpp

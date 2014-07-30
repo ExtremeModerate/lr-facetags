@@ -1,0 +1,24 @@
+log/2014-07-30_15-12-44_Wed Jul 30 14:57:26 2014_haarcascade_frontalface_alt.log
+
+Algorithm:    /home/ubuntu/lr-facetags/Images/metaface/Wed Jul 30 14:57:26 2014_haarcascade_frontalface_alt
+Ground truth: ./Images/.metaface
+Threshold = 0.5
+Function = benchmarkDetection
+
+=====================================
+
+
+=====================================
+
+Summary
+
+Number of faces in Ground Truth:0
+Number of faces detected by Algorithm:0
+
+True Positives  = 0
+False Positives = 0
+False Negatives = 0
+
+Precision = -nan
+Recall    = -nan
+

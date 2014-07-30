@@ -5,6 +5,9 @@
 #define MAINUI_H
 
 #include <QMainWindow>
+#include <TagTrainingSetDialog.h>
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
 
 extern QStringList benchmarkTargets;
 extern std::string sDate;
@@ -22,7 +25,7 @@ public:
 
 private:
   Ui::MainWindow *ui;
-
+  TagTrainingSetDialog *tagDialog;
 private slots:
   void detect();
   void recognize();

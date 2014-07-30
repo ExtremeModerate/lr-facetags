@@ -63,10 +63,10 @@ bool writeObjectFile(const std::vector<FaceObject> &vfo, const std::string &sFil
 bool writeObjectFileVector(const std::vector<std::vector<FaceObject> > &vfo, const std::string &sFolder, bool append)
 {
   std::ofstream ofObjFile;
-  std::string fullPath;  
   for (size_t j = 0; j < vfo.size(); j++) {
     if (vfo[j].size() > 0) {
-    fullPath = sFolder + "/" + vfo[j][0].fileName + ".txt";
+      std::string fullPath = sFolder + "/" + vfo[j][0].fileName + ".txt";
+      std::cout << fullPath << std::endl;
 	  ofObjFile.clear();
 	  if(append)
 		  ofObjFile.open(fullPath.c_str(), std::ofstream::app);

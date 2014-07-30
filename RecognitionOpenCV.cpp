@@ -11,71 +11,34 @@
 using namespace std;
 using namespace cv;
 
-void recognizeLBPHistogramsOpenCV(std::vector<std::vector<FaceObject> > & faceObjects) {
+void recognizeLBPHistogramsOpenCV(vector<vector<FaceObject> > & faceObjects, vector<Mat> images, vector<int> labels) {
   Ptr<FaceRecognizer> model = createLBPHFaceRecognizer();
-  vector<Mat> images;
-  vector<int> labels;
-  vector<vector<int> > positions;
-  Mat image;
-  int ctr = 1, prediction;
+  int ctr = *max_element(labels.begin(), labels.end()), prediction;
   double confidence;
 
-  // fill the training set with two images, otherwise confidence varys too much
-  for (size_t i = 0; i < faceObjects.size(); i++) {
-    for (size_t j = 0; j < faceObjects[i].size(); j++) {
-      if (faceObjects[i][j].objectID == -1 && !faceObjects[i][j].image.empty()) {          
-        faceObjects[i][j].objectID = ctr;
-        cout<<"creating new objectID: "<<faceObjects[i][j].objectID<<" for "<<faceObjects[i][j].fileName<<" "<<j<< endl;
-        images.push_back(faceObjects[i][j].image);
-        labels.push_back(ctr);
-        model->train(images, labels);
-        ctr++;
-        if (ctr == 2) goto complete;
+  // train model with given training set and labels
+  model->train(images, labels);
 
-        for (size_t k = 0; k < faceObjects.size(); k++) {
-          for (size_t l = 0; l < faceObjects[k].size(); l++) {
-            if (faceObjects[k][l].objectID == -1 && !faceObjects[k][l].image.empty()) { 
-              model->predict(faceObjects[k][l].image, prediction, confidence);
- cout << faceObjects[k][l].fileName<<" "<<l<<" recognized objectID: "<<prediction<<" confidence: " << confidence << endl;
-              if (confidence > 1000) {
-                faceObjects[k][l].objectID = prediction;
-                images.push_back(faceObjects[k][l].image);
-                labels.push_back(prediction);
-                goto complete;
-              }
-            }
-          }
-        }          
-      }
-    }    
-  }
-complete: 
-
-
-  for (size_t i = 0; i < faceObjects.size(); i++) {
-    for (size_t j = 0; j < faceObjects[i].size(); j++) {
-      if (faceObjects[i][j].objectID == -1 && !faceObjects[i][j].image.empty()) {          
-        faceObjects[i][j].objectID = ctr;
-        cout<<"creating new objectID: "<<faceObjects[i][j].objectID<<" for "<<faceObjects[i][j].fileName<<" "<<j<< endl;
-        images.push_back(faceObjects[i][j].image);
-        labels.push_back(ctr);
-        ctr++;   
-        model->train(images, labels);
-       
-        // recognize all unknown faces with the newly trained model
-        for (size_t k = 0; k < faceObjects.size(); k++) {
-          for (size_t l = 0; l < faceObjects[k].size(); l++) {
-            if (faceObjects[k][l].objectID == -1 && !faceObjects[k][l].image.empty()) { 
-              model->predict(faceObjects[k][l].image, prediction, confidence);
- cout << faceObjects[k][l].fileName<<" "<<l<<" recognized objectID: "<<prediction<<" confidence: " << confidence << endl;
-              if (confidence > 50) {
-                faceObjects[k][l].objectID = prediction;
-                images.push_back(faceObjects[k][l].image);
-                labels.push_back(prediction);
-               
-              }
-            }
-          }
+  // iterate over every face
+  for (size_t k = 0; k < faceObjects.size(); k++) {
+    for (size_t l = 0; l < faceObjects[k].size(); l++) {
+      if (faceObjects[k][l].objectID == -1 && !faceObjects[k][l].image.empty()) {
+         model->predict(faceObjects[k][l].image, prediction, confidence);
+         cout << faceObjects[k][l].fileName<<" "<<" recognized objectID: "<<prediction<<" confidence: " << confidence << endl;
+         if (confidence > 75) {
+           faceObjects[k][l].objectID = prediction;
+           images.push_back(faceObjects[k][l].image);
+           labels.push_back(prediction);
+           model->update(images, labels);
+         }
+         // new ID if face is unknown
+         else {
+           faceObjects[k][l].objectID = ctr;
+           cout<<"creating new objectID: "<<faceObjects[k][l].objectID<<" for "<<faceObjects[k][l].fileName<<" "<< endl;
+           images.push_back(faceObjects[k][l].image);
+           labels.push_back(ctr);
+           ctr++;
+           model->update(images, labels);
         }          
       }
     }    
@@ -83,144 +46,70 @@ complete:
 }
 
 
-void recognizeFisherfacesOpenCV(std::vector<std::vector<FaceObject> > & faceObjects) {
-   Ptr<FaceRecognizer> model = createFisherFaceRecognizer();
-  vector<Mat> images;
-  vector<int> labels;
-  vector<vector<int> > positions;
-  Mat image;
-  int ctr = 1, prediction;
+void recognizeFisherfacesOpenCV(std::vector<std::vector<FaceObject> > & faceObjects, vector<Mat> images, vector<int> labels) {
+  Ptr<FaceRecognizer> model = createFisherFaceRecognizer();
+  int ctr = *max_element(labels.begin(), labels.end()), prediction;
   double confidence;
 
-  // fill the training set with two images, otherwise confidence varys too much
-  for (size_t i = 0; i < faceObjects.size(); i++) {
-    for (size_t j = 0; j < faceObjects[i].size(); j++) {
-      if (faceObjects[i][j].objectID == -1 && !faceObjects[i][j].image.empty()) {          
-        faceObjects[i][j].objectID = ctr;
-        cout<<"creating new objectID: "<<faceObjects[i][j].objectID<<" for "<<faceObjects[i][j].fileName<<" "<<j<< endl;
-        images.push_back(faceObjects[i][j].image);
-        labels.push_back(ctr);
-        model->train(images, labels);
-        ctr++;
-        if (ctr == 2) goto complete;
+  // train model with given training set and labels
+  model->train(images, labels);
 
-        for (size_t k = 0; k < faceObjects.size(); k++) {
-          for (size_t l = 0; l < faceObjects[k].size(); l++) {
-            if (faceObjects[k][l].objectID == -1 && !faceObjects[k][l].image.empty()) { 
-              model->predict(faceObjects[k][l].image, prediction, confidence);
- cout << faceObjects[k][l].fileName<<" "<<l<<" recognized objectID: "<<prediction<<" confidence: " << confidence << endl;
-              if (confidence > 1000) {
-                faceObjects[k][l].objectID = prediction;
-                images.push_back(faceObjects[k][l].image);
-                labels.push_back(prediction);
-                goto complete;
-              }
-            }
-          }
-        }          
+  // iterate over every face
+  for (size_t k = 0; k < faceObjects.size(); k++) {
+    for (size_t l = 0; l < faceObjects[k].size(); l++) {
+      if (faceObjects[k][l].objectID == -1 && !faceObjects[k][l].image.empty()) {
+         model->predict(faceObjects[k][l].image, prediction, confidence);
+         cout << faceObjects[k][l].fileName<<" "<<" recognized objectID: "<<prediction<<" confidence: " << confidence << endl;
+         if (confidence > 300) {
+           faceObjects[k][l].objectID = prediction;
+           images.push_back(faceObjects[k][l].image);
+           labels.push_back(prediction);
+           model->train(images, labels);
+         }
+         // new ID if face is unknown
+         else {
+           faceObjects[k][l].objectID = ctr;
+           cout<<"creating new objectID: "<<faceObjects[k][l].objectID<<" for "<<faceObjects[k][l].fileName<<" "<< endl;
+           images.push_back(faceObjects[k][l].image);
+           labels.push_back(ctr);
+           ctr++;
+           model->train(images, labels);
+        }
       }
-    }    
-  }
-complete: 
-
-
-  for (size_t i = 0; i < faceObjects.size(); i++) {
-    for (size_t j = 0; j < faceObjects[i].size(); j++) {
-      if (faceObjects[i][j].objectID == -1 && !faceObjects[i][j].image.empty()) {          
-        faceObjects[i][j].objectID = ctr;
-        cout<<"creating new objectID: "<<faceObjects[i][j].objectID<<" for "<<faceObjects[i][j].fileName<<" "<<j<< endl;
-        images.push_back(faceObjects[i][j].image);
-        labels.push_back(ctr);
-        ctr++;   
-        model->train(images, labels);
-       
-        // recognize all unknown faces with the newly trained model
-        for (size_t k = 0; k < faceObjects.size(); k++) {
-          for (size_t l = 0; l < faceObjects[k].size(); l++) {
-            if (faceObjects[k][l].objectID == -1 && !faceObjects[k][l].image.empty()) { 
-              model->predict(faceObjects[k][l].image, prediction, confidence);
- cout << faceObjects[k][l].fileName<<" "<<l<<" recognized objectID: "<<prediction<<" confidence: " << confidence << endl;
-              if (confidence > 50) {
-                faceObjects[k][l].objectID = prediction;
-                images.push_back(faceObjects[k][l].image);
-                labels.push_back(prediction);
-               
-              }
-            }
-          }
-        }          
-      }
-    }    
+    }
   }
 }
 
-void recognizeEigenfacesOpenCV(std::vector<std::vector<FaceObject> > & faceObjects) {
+void recognizeEigenfacesOpenCV(std::vector<std::vector<FaceObject> > & faceObjects, vector<Mat> images, vector<int> labels) {
   Ptr<FaceRecognizer> model = createEigenFaceRecognizer();
-  vector<Mat> images;
-  vector<int> labels;
-  vector<vector<int> > positions;
-  Mat image;
-  int ctr = 1, prediction;
+  int ctr = *max_element(labels.begin(), labels.end()), prediction;
   double confidence;
 
-  // fill the training set with two images, otherwise confidence varys too much
-  for (size_t i = 0; i < faceObjects.size(); i++) {
-    for (size_t j = 0; j < faceObjects[i].size(); j++) {
-      if (faceObjects[i][j].objectID == -1 && !faceObjects[i][j].image.empty()) {          
-        faceObjects[i][j].objectID = ctr;
-        cout<<"creating new objectID: "<<faceObjects[i][j].objectID<<" for "<<faceObjects[i][j].fileName<<" "<<j<< endl;
-        images.push_back(faceObjects[i][j].image);
-        labels.push_back(ctr);
-        model->train(images, labels);
-        ctr++;
-        if (ctr == 2) goto complete;
+  // train model with given training set and labels
+  model->train(images, labels);
 
-        for (size_t k = 0; k < faceObjects.size(); k++) {
-          for (size_t l = 0; l < faceObjects[k].size(); l++) {
-            if (faceObjects[k][l].objectID == -1 && !faceObjects[k][l].image.empty()) { 
-              model->predict(faceObjects[k][l].image, prediction, confidence);
- cout << faceObjects[k][l].fileName<<" "<<l<<" recognized objectID: "<<prediction<<" confidence: " << confidence << endl;
-              if (confidence > 1000) {
-                faceObjects[k][l].objectID = prediction;
-                images.push_back(faceObjects[k][l].image);
-                labels.push_back(prediction);
-                goto complete;
-              }
-            }
-          }
-        }          
+  // iterate over every face
+  for (size_t k = 0; k < faceObjects.size(); k++) {
+    for (size_t l = 0; l < faceObjects[k].size(); l++) {
+      if (faceObjects[k][l].objectID == -1 && !faceObjects[k][l].image.empty()) {
+         model->predict(faceObjects[k][l].image, prediction, confidence);
+         cout << faceObjects[k][l].fileName<<" "<<" recognized objectID: "<<prediction<<" confidence: " << confidence << endl;
+         if (confidence > 2000) {
+           faceObjects[k][l].objectID = prediction;
+           images.push_back(faceObjects[k][l].image);
+           labels.push_back(prediction);
+           model->train(images, labels);
+         }
+         // new ID if face is unknown
+         else {
+           faceObjects[k][l].objectID = ctr;
+           cout<<"creating new objectID: "<<faceObjects[k][l].objectID<<" for "<<faceObjects[k][l].fileName<<" "<< endl;
+           images.push_back(faceObjects[k][l].image);
+           labels.push_back(ctr);
+           ctr++;
+           model->train(images, labels);
+        }
       }
-    }    
-  }
-complete: 
-
-
-  for (size_t i = 0; i < faceObjects.size(); i++) {
-    for (size_t j = 0; j < faceObjects[i].size(); j++) {
-      if (faceObjects[i][j].objectID == -1 && !faceObjects[i][j].image.empty()) {          
-        faceObjects[i][j].objectID = ctr;
-        cout<<"creating new objectID: "<<faceObjects[i][j].objectID<<" for "<<faceObjects[i][j].fileName<<" "<<j<< endl;
-        images.push_back(faceObjects[i][j].image);
-        labels.push_back(ctr);
-        ctr++;   
-        model->train(images, labels);
-       
-        // recognize all unknown faces with the newly trained model
-        for (size_t k = 0; k < faceObjects.size(); k++) {
-          for (size_t l = 0; l < faceObjects[k].size(); l++) {
-            if (faceObjects[k][l].objectID == -1 && !faceObjects[k][l].image.empty()) { 
-              model->predict(faceObjects[k][l].image, prediction, confidence);
- cout << faceObjects[k][l].fileName<<" "<<l<<" recognized objectID: "<<prediction<<" confidence: " << confidence << endl;
-              if (confidence > 50) {
-                faceObjects[k][l].objectID = prediction;
-                images.push_back(faceObjects[k][l].image);
-                labels.push_back(prediction);
-               
-              }
-            }
-          }
-        }          
-      }
-    }    
+    }
   }
 }
