@@ -19,12 +19,19 @@
 #include "./readWriteObjectFile.h"
 #include "./FaceObject.h"
 #include "benchmark.h"
+#include "plotdialog.h"
 
 using namespace std;
 using namespace cv;
 
 QStringList benchmarkTargets; // list of targets for benchmarking
 string sTimestamp; // timestamp with chosen method of the last detection/recognition run
+struct PlotStruct
+{
+    QVector<double> pr, rc;
+    QString name;
+};
+vector<PlotStruct> vPlots;
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
@@ -40,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent) :
   connect(ui->pushLoadRun, SIGNAL(clicked()), this, SLOT(loadRun()));
   connect(ui->pushCompareDetection, SIGNAL(clicked()), this, SLOT(compareDetection()));
   connect(ui->pushCompareRecognition, SIGNAL(clicked()), this, SLOT(compareRecognition()));
+  connect(ui->pushShowPlot, SIGNAL(clicked()), this, SLOT(showPlot()));
 }
 
 MainWindow::~MainWindow() {
@@ -243,6 +251,11 @@ void MainWindow::compareDetection() {
     ui->outputText->append(work);
     //benchmarkResult bRes = benchmark(work.toAscii().data(), gTruth.toAscii().data(), 0.5, false);
     benchmarkResult bRes = benchmarkDetection(work.toAscii().data(), gTruth.toAscii().data(), 0.5);
+    PlotStruct plot_struct;
+    plot_struct.pr.push_back(bRes.precision);
+    plot_struct.rc.push_back(bRes.recall);
+    plot_struct.name = bRes.logFileName.c_str();
+    vPlots.push_back(plot_struct);
     ui->outputText->append(bRes.toString().c_str());
   }
   ui->outputText->append("end compareDetection()");
@@ -259,4 +272,14 @@ void MainWindow::compareRecognition() {
     ui->outputText->append(bRes.toString().c_str());
   }
   ui->outputText->append("end compareRecognition()");
+}
+
+void MainWindow::showPlot() {
+    PlotDialog plotDialog(this);
+    for(size_t i=0; i<vPlots.size(); i++)
+    {
+        plotDialog.addGraph(vPlots[i].pr, vPlots[i].rc, vPlots[i].name);
+    }
+    plotDialog.plotGraphs();
+    plotDialog.exec();
 }

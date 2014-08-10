@@ -37,6 +37,7 @@ private slots:
   void loadRun();
   void compareDetection();
   void compareRecognition();
+  void showPlot();
 };
 
 #endif // MAINUI_H

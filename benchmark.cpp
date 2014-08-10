@@ -74,7 +74,7 @@ double getOverlapRelToGrndtr(const FaceObject &foAlgo, const FaceObject &foGrndt
 	return aAlgo / aGrndtr;
 }
 
-void openLogfile(std::ofstream &ofLog, const std::string &sAlgo, const std::string &sGrndtr, double threshold, const std::string &sFunction)
+std::string openLogfile(std::ofstream &ofLog, const std::string &sAlgo, const std::string &sGrndtr, double threshold, const std::string &sFunction)
 {
     char cLogFilename[256];
     char cTmp[256];
@@ -86,6 +86,8 @@ void openLogfile(std::ofstream &ofLog, const std::string &sAlgo, const std::stri
     timeinfo = localtime(&rawtime);
     strftime(cTmp,256,"%Y-%m-%d_%H-%M-%S",timeinfo);
     sprintf(cLogFilename,"log/%s_%s.log",cTmp,(sAlgo.substr(sAlgo.find_last_of('/')+1)).c_str());
+    std::string sLogFilename(cTmp);
+    sLogFilename += "_"+(sAlgo.substr(sAlgo.find_last_of('/')+1));
     //sprintf(sLogFilename,"log/%s",sLogFilename);
     printf("Log File: %s\n",cLogFilename);
     if(!QDir("log").exists())
@@ -105,6 +107,7 @@ void openLogfile(std::ofstream &ofLog, const std::string &sAlgo, const std::stri
     ofLog << "=====================================" << std::endl;
     ofLog << std::endl;
     ofLog.flush();
+    return sLogFilename;
 }
 
 void writeSummaryToLogFile(std::ofstream &ofLog, const benchmarkResult &bRes, int iNumFacesGrndtr, int iNumFacesAlgo)
@@ -142,7 +145,7 @@ benchmarkResult benchmarkDetection(const std::string &sAlgo, const std::string &
 
     // Open logfile
     std::ofstream ofLog;
-    openLogfile(ofLog, sAlgo, sGrndtr, threshold, "benchmarkDetection");
+    bRes.logFileName = openLogfile(ofLog, sAlgo, sGrndtr, threshold, "benchmarkDetection");
 
     // Iterate folders
     dirAlgo.setFilter(QDir::Files);

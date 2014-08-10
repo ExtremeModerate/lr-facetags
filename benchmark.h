@@ -21,6 +21,7 @@ struct benchmarkResult
     std::string toString();
     int truePositives, falsePositives, falseNegatives;
     double precision, recall;
+    std::string logFileName;
 };
 
 double precision(int truePositives, int falsePositives);
@@ -43,7 +44,7 @@ benchmarkResult benchmarkDetection(const std::string &sAlgo, const std::string &
 benchmarkResult benchmarkRecognition(const std::string &sAlgo, const std::string &sGrndtr, double threshold);
 
 // Help functions
-void openLogfile(std::ofstream &ofLog, const std::string &sAlgo, const std::string &sGrndtr, double threshold, const std::string &sFunction);
+std::string openLogfile(std::ofstream &ofLog, const std::string &sAlgo, const std::string &sGrndtr, double threshold, const std::string &sFunction);
 void writeSummaryToLogFile(std::ofstream &ofLog, const benchmarkResult &bRes, int iNumFacesGrndtr, int iNumFacesAlgo);
 
 #endif
