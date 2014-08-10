@@ -54,12 +54,24 @@ double getOverlapAbs(const FaceObject &fo1, const FaceObject &fo2)
 	return ox * oy;
 }
 
-double getOverlapRel(const FaceObject &fo1, const FaceObject &fo2)
+double getOverlapRelToTotalArea(const FaceObject &fo1, const FaceObject &fo2)
 {
 	double oa = getOverlapAbs(fo1, fo2); // overlapping area
 	double a1 = fo1.width * fo1.height; // area rect 1
 	double a2 = fo2.width * fo2.height; // area rect 2
 	return oa / (a1 + a2 - oa);
+}
+
+double getOverlapRelToGrndtr(const FaceObject &foAlgo, const FaceObject &foGrndtr)
+{
+	double oa = getOverlapAbs(foAlgo, foGrndtr); // overlapping area
+	double aAlgo = foAlgo.width * foAlgo.height; // area foAlgo
+	double aGrndtr = foGrndtr.width * foGrndtr.height; // area foGrndtr
+	if(oa >= aAlgo && aAlgo / aGrndtr > 0.1)
+	{
+		return 1.0;
+	}
+	return aAlgo / aGrndtr;
 }
 
 void openLogfile(std::ofstream &ofLog, const std::string &sAlgo, const std::string &sGrndtr, double threshold, const std::string &sFunction)
@@ -158,7 +170,7 @@ benchmarkResult benchmarkDetection(const std::string &sAlgo, const std::string &
             {
                 for(size_t j=0; j<vGrndtr.size(); j++)
                 {
-                    overlap[i][j] = getOverlapRel(vAlgo[i], vGrndtr[j]);
+                    overlap[i][j] = getOverlapRelToGrndtr(vAlgo[i], vGrndtr[j]);
                 }
             }
 
@@ -273,7 +285,7 @@ benchmarkResult benchmarkRecognition(const std::string &sAlgo, const std::string
             {
                 for(size_t j=0; j<vGrndtr.size(); j++)
                 {
-                    overlap[i][j] = getOverlapRel(vAlgo[i], vGrndtr[j]);
+                    overlap[i][j] = getOverlapRelToGrndtr(vAlgo[i], vGrndtr[j]);
                 }
             }
 

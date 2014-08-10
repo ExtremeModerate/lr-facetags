@@ -29,7 +29,12 @@ double recall(int truePositives, int falseNegatives);
 // Computes absolute overlap of two FaceObjects
 double getOverlapAbs(const FaceObject &fo1, const FaceObject &fo2);
 // Computes relative overlap of two FaceObjects
-double getOverlapRel(const FaceObject &fo1, const FaceObject &fo2);
+// returns: overlapping area / total area
+double getOverlapRelToTotalArea(const FaceObject &fo1, const FaceObject &fo2);
+// Computes relative overlap of two FaceObjects
+// returns: 1.0 if algo area is totally inside ground truth area
+//			else: overlapping area / ground truth area
+double getOverlapRelToGrndtr(const FaceObject &foAlgo, const FaceObject &foGrndtr);
 // Compares algo and ground truth.
 // sAlgo: Directory of face object files of algorithm
 // sGrndtr: Directory of face object files of ground truth.
