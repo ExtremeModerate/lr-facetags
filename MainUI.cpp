@@ -246,6 +246,7 @@ void MainWindow::loadRun() {
 void MainWindow::compareDetection() {
 	ui->outputText->append("begin compareDetection()");
   QString gTruth = ui->inputPath->text() + "/.metaface";
+  vPlots.clear();
   for (int i = 0; i < benchmarkTargets.size(); ++i) {
 	QString work = benchmarkTargets.at(i);
     ui->outputText->append(work);
