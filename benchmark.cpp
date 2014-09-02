@@ -1,4 +1,5 @@
-#include "benchmark.h" 
+#include <iostream>
+#include "benchmark.h"
 
 benchmarkResult::benchmarkResult()
 {
@@ -131,21 +132,38 @@ void writeSummaryToLogFile(std::ofstream &ofLog, const benchmarkResult &bRes, in
     ofLog.flush();
 }
 
+void writeLogfileEntry(std::ofstream &ofLog, const std::string &sFilename, int tp, int fp, int fn)
+{
+    ofLog << sFilename << std::endl;
+    ofLog << "# faces: " << tp+fn;
+    ofLog << ", # detected faces: " << tp+fp << std::endl;
+    ofLog << "tp = " << tp << ", fp = " << fp << ", fn = " << fn;
+    ofLog << ", pr = " << precision(tp, fp);
+    ofLog << ", rc = " << recall(tp, fn) << std::endl;
+    ofLog.flush();
+}
+
 benchmarkResult benchmarkDetection(const std::string &sAlgo, const std::string &sGrndtr, double threshold)
 {
+    std::vector<FaceObject> vDummy1, vDummy2;
+    return benchmarkDetectionBase(sAlgo, sGrndtr, threshold, true, vDummy1, vDummy2);
+}
+
+benchmarkResult benchmarkDetectionBase(const std::string &sAlgo, const std::string &sGrndtr, double threshold, bool writeLogFile, std::vector<FaceObject> &vAlgoGes, std::vector<FaceObject> &vGrndtrGes)
+{
     QString qAlgo = sAlgo.c_str();
-    QString qGrndtr = sGrndtr.c_str();
     QDir dirAlgo = qAlgo;
-    QDir dirGrndtr = qGrndtr;
     std::string sFullpathAlgo, sFilename, sFullpathGrndtr;
     int tp = 0;
     benchmarkResult bRes;
     int iNumFacesGrndtr = 0;
     int iNumFacesAlgo = 0;
+    int iSeqNo = 0;
 
     // Open logfile
     std::ofstream ofLog;
-    bRes.logFileName = openLogfile(ofLog, sAlgo, sGrndtr, threshold, "benchmarkDetection");
+    if(writeLogFile)
+        bRes.logFileName = openLogfile(ofLog, sAlgo, sGrndtr, threshold, "benchmarkDetection");
 
     // Iterate folders
     dirAlgo.setFilter(QDir::Files);
@@ -213,7 +231,17 @@ benchmarkResult benchmarkDetection(const std::string &sAlgo, const std::string &
                 {
                     overlap[iHighest][j] = -1.0;
                 }
+
+                // Write seqNo to FO Grndtr and FO Algo
+                vAlgo[iHighest].iSequentialNumber = iSeqNo;
+                vGrndtr[jHighest].iSequentialNumber = iSeqNo;
+                iSeqNo++;
             }
+            // Add FOs to return-vectors
+            for(size_t i=0; i<vAlgo.size(); i++)
+                vAlgoGes.push_back(vAlgo[i]);
+            for(size_t i=0; i<vGrndtr.size(); i++)
+                vGrndtrGes.push_back(vGrndtr[i]);
         }
 
         int fp = vAlgo.size() - tp;
@@ -224,13 +252,8 @@ benchmarkResult benchmarkDetection(const std::string &sAlgo, const std::string &
         bRes.falseNegatives += fn;
 
         // Write logfile entry
-        ofLog << sFilename << std::endl;
-        ofLog << "# faces: " << vGrndtr.size();
-        ofLog << ", # detected faces: " << vAlgo.size() << std::endl;
-        ofLog << "tp = " << tp << ", fp = " << fp << ", fn = " << fn;
-        ofLog << ", pr = " << precision(tp, fp);
-        ofLog << ", rc = " << recall(tp, fn) << std::endl;
-        ofLog.flush();
+        if(writeLogFile)
+            writeLogfileEntry(ofLog, sFilename, tp, fp, fn);
 
         tp = 0;
     }
@@ -239,131 +262,154 @@ benchmarkResult benchmarkDetection(const std::string &sAlgo, const std::string &
     bRes.recall = recall(bRes.truePositives, bRes.falseNegatives);
 
     // Write logfile summary
-    writeSummaryToLogFile(ofLog, bRes, iNumFacesGrndtr, iNumFacesAlgo);
+    if(writeLogFile)
+        writeSummaryToLogFile(ofLog, bRes, iNumFacesGrndtr, iNumFacesAlgo);
 
     return bRes;
 }
 
+void printAllocation(std::map<int, int> mObjectIDAlgo,
+					std::map<int, int> mObjectIDGrndtr,
+					std::map<int, bool> mAllocation)
+{
+	std::cout << "SeqNo\tID-GT\tID-Algo\tAlloc" << std::endl;
+    std::map<int, bool>::iterator it;
+    //for(it=mObjectIDGrndtr.begin(); it!=mObjectIDGrndtr.end(); it++)
+    for(it=mAllocation.begin(); it!=mAllocation.end(); it++)
+	{
+		std::cout << it->first << "\t";
+        std::cout << mObjectIDGrndtr[it->first] << "\t";
+		std::cout << mObjectIDAlgo[it->first] << "\t";
+        std::cout << it->second << std::endl;
+	}
+	std::cout << std::endl;
+}
+
 benchmarkResult benchmarkRecognition(const std::string &sAlgo, const std::string &sGrndtr, double threshold)
 {
-    QString qAlgo = sAlgo.c_str();
-    QString qGrndtr = sGrndtr.c_str();
-    QDir dirAlgo = qAlgo;
-    QDir dirGrndtr = qGrndtr;
-    std::string sFullpathAlgo, sFilename, sFullpathGrndtr;
     benchmarkResult bRes;
     int iNumFacesGrndtr = 0;
     int iNumFacesAlgo = 0;
+    std::map<int, bool> mAllocation;
+	int iNumberOfAllocations = 0;
+    bool bAllocationChanged = true;
 
     // Open logfile
-    std::ofstream ofLog;
-    openLogfile(ofLog, sAlgo, sGrndtr, threshold, "benchmarkRecognition");
+    //std::ofstream ofLog;
+    //openLogfile(ofLog, sAlgo, sGrndtr, threshold, "benchmarkRecognition");
 
-    // How many TP do we get if we match GrndtrID to AlgoID
-    std::map<int, std::map<int, int> > mTP; // TruePositives = mTP[GrndtrID][AlgoID]
+    std::map<int, std::vector<int> > mSeqNoAlgo, mSeqNoGrndtr; // objectID -> seqNumbers
+    std::map<int, int> mObjectIDAlgo, mObjectIDGrndtr; // seqNo -> objectID
+    std::vector<FaceObject> vAlgo, vGrndtr;
 
-    // Iterate folders
-    dirAlgo.setFilter(QDir::Files);
-    QDirIterator itDirAlgo(dirAlgo);
-    while(itDirAlgo.hasNext())
+    benchmarkDetectionBase(sAlgo, sGrndtr, threshold, false, vAlgo, vGrndtr);
+
+    // Find out which FOs have the same ID in Algo
+    for(size_t i=0; i<vAlgo.size(); i++)
     {
-        itDirAlgo.next();
-        sFullpathAlgo = itDirAlgo.filePath().toUtf8().constData();
-        sFilename = itDirAlgo.fileName().toUtf8().constData();
-        sFullpathGrndtr = sGrndtr + "/" + sFilename;
-        std::vector<FaceObject> vAlgo = readObjectFile(sFullpathAlgo);
-        std::vector<FaceObject> vGrndtr = readObjectFile(sFullpathGrndtr);
-
-        if(!QFile(sFullpathAlgo.c_str()).exists() || !QFile(sFullpathGrndtr.c_str()).exists())
-            continue; // Go on if ground truth file and algo file exist.
-
-        iNumFacesAlgo += vAlgo.size();
-        iNumFacesGrndtr += vGrndtr.size();
-
-        if(vAlgo.size() != 0 && vGrndtr.size() != 0)
-        {
-            // Compare FaceObjects of Algo and Grndtr
-            double overlap[vAlgo.size()][vGrndtr.size()];
-            for(size_t i=0; i<vAlgo.size(); i++)
-            {
-                for(size_t j=0; j<vGrndtr.size(); j++)
-                {
-                    overlap[i][j] = getOverlapRelToGrndtr(vAlgo[i], vGrndtr[j]);
-                }
-            }
-
-            // Count possible number of TP
-            for(size_t k=0; k<vAlgo.size(); k++)
-            {
-                double dHighestOverlap = -1.0;
-                int iHighest = 0;
-                int jHighest = 0;
-
-                // get highest overlap value
-                for(size_t i=0; i<vAlgo.size(); i++)
-                {
-                    for(size_t j=0; j<vGrndtr.size(); j++)
-                    {
-                        if(overlap[i][j] > dHighestOverlap)
-                        {
-                            dHighestOverlap = overlap[i][j];
-                            iHighest = i;
-                            jHighest = j;
-                        }
-                    }
-                }
-
-                // Check whether it is a possible TP
-                if(dHighestOverlap >= threshold)
-                    mTP[vGrndtr[jHighest].objectID][vAlgo[iHighest].objectID]++;
-                else
-                    break;
-
-                // Set row & col to -1 => Don't consider them in future
-                for(size_t i=0; i<vAlgo.size(); i++)
-                {
-                    overlap[i][jHighest] = -1.0;
-                }
-                for(size_t j=0; j<vGrndtr.size(); j++)
-                {
-                    overlap[iHighest][j] = -1.0;
-                }
-            }
-        }
-
-        bRes.falsePositives += vAlgo.size();
-        bRes.falseNegatives += vGrndtr.size();
+        //std::cout << "vAlgo[" << i << "].iSequentialNumber: " << vAlgo[i].iSequentialNumber << std::endl;
+        if(vAlgo[i].iSequentialNumber == -1) continue;
+        mSeqNoAlgo[vAlgo[i].objectID].push_back(vAlgo[i].iSequentialNumber);
+        mObjectIDAlgo[vAlgo[i].iSequentialNumber] = vAlgo[i].objectID;
+        iNumFacesAlgo++;
+    }
+    
+    // Find out which FOs have the same ID in Grndtr
+    for(size_t i=0; i<vGrndtr.size(); i++)
+    {
+        if(mObjectIDAlgo.count(vGrndtr[i].iSequentialNumber) == 0) continue;
+        mSeqNoGrndtr[vGrndtr[i].objectID].push_back(vGrndtr[i].iSequentialNumber);
+        mObjectIDGrndtr[vGrndtr[i].iSequentialNumber] = vGrndtr[i].objectID;
+        iNumFacesGrndtr++;
+        mAllocation[vGrndtr[i].iSequentialNumber] = false;
+        //if(vGrndtr[i].iSequentialNumber==-1) std::cout << "-1: " << sFullpathGrndtr << std::endl;
     }
 
-    std::map<int, std::map<int, int> >::iterator itGrndtr;
-    ofLog << "AlgoID -> GrndtrID : Number of matches (= True Positives)" << std::endl;
-    ofLog.flush();
-    for(itGrndtr=mTP.begin(); itGrndtr!=mTP.end(); itGrndtr++)
+    //std::cout << "mObjectIDGrndtr.size()=" << mObjectIDGrndtr.size() << std::endl;
+    //std::cout << "iNumFacesGrndtr=" << iNumFacesGrndtr << std::endl;
+    //std::cout << "mAllocation.size()=" << mAllocation.size() << std::endl;
+
+    // Compute allocation of Grndtr IDs and Algo IDs
+    while(bAllocationChanged)
     {
-        int max = 0;
-        int maxID = -2;
-        std::map<int, int>::iterator itAlgo;
-        for(itAlgo=itGrndtr->second.begin(); itAlgo!=itGrndtr->second.end(); itAlgo++)
+        bAllocationChanged = false;
+        std::map<int, bool>::iterator itAllocation;
+        for(itAllocation=mAllocation.begin(); itAllocation!=mAllocation.end(); /*itAllocation++*/)
         {
-            if(itAlgo->second > max)
+            if(itAllocation->second)
             {
-                max = itAlgo->second;
-                maxID = itAlgo->first;
+                itAllocation++;
+                continue; // Allocation is already true
             }
+            //std::cout << "itAllocation->first: " << itAllocation->first << std::endl;
+            //if(mObjectIDGrndtr.find(itAllocation->first) == mObjectIDGrndtr.end() || mObjectIDAlgo.find(itAllocation->first) == mObjectIDAlgo.end())
+            if(mObjectIDGrndtr.count(itAllocation->first) == 0 || mObjectIDAlgo.count(itAllocation->first) == 0)
+            { // SeqNo does not exist -> False positive or false negative -> We do not consider them in recognition benchmark.
+                //std::map<int, bool>::iterator itTmp = itAllocation;
+                //std::cout << "out: " << itAllocation->first << std::endl;
+                //itAllocation--;
+                mAllocation.erase(itAllocation++);
+                continue;
+            }
+            int iAllocationGain = 0;
+            int idGrndtr = mObjectIDGrndtr[itAllocation->first];
+            int idAlgo = mObjectIDAlgo[itAllocation->first];
+            std::vector<int> vAllocationChanged;
+            for(size_t j=0; j<mSeqNoGrndtr[idGrndtr].size(); j++)
+            {
+                int iSeqNo = mSeqNoGrndtr[idGrndtr][j];
+                if(mObjectIDAlgo[iSeqNo] == idAlgo && !mAllocation[iSeqNo])
+                {
+                    iAllocationGain++;
+                    vAllocationChanged.push_back(iSeqNo);
+                }
+                else if(mObjectIDAlgo[iSeqNo] != idAlgo && mAllocation[iSeqNo])
+                {
+                    iAllocationGain--;
+                    vAllocationChanged.push_back(iSeqNo);
+                }
+                //if(iSeqNo == -1) std::cout << "-1 in for(size_t j=0; j<mSeqNoGrndtr[idGrndtr].size(); j++) " << idAlgo << " " << idGrndtr << std::endl;
+            }
+            for(size_t j=0; j<mSeqNoAlgo[idAlgo].size(); j++)
+            {
+                int iSeqNo = mSeqNoAlgo[idAlgo][j];
+                if(mObjectIDGrndtr[iSeqNo] == idGrndtr && !mAllocation[iSeqNo])
+                {
+                    //iAllocationGain++;
+                    //vAllocationChanged.push_back(iSeqNo);
+                }
+                else if(mObjectIDGrndtr[iSeqNo] != idGrndtr && mAllocation[iSeqNo])
+                {
+                    iAllocationGain--;
+                    vAllocationChanged.push_back(iSeqNo);
+                }
+                //if(iSeqNo == -1) std::cout << "-1 in for(size_t j=0; j<mSeqNoAlgo[idAlgo].size(); j++) " << idAlgo << " " << idGrndtr << std::endl;
+            }
+            if(iAllocationGain > 0)
+            {
+				iNumberOfAllocations += iAllocationGain;
+                bAllocationChanged = true;
+                for(size_t j=0; j<vAllocationChanged.size(); j++)
+                {
+                    mAllocation[vAllocationChanged[j]] = mAllocation[vAllocationChanged[j]] ? false : true;
+                    //if(vAllocationChanged[j] == -1) std::cout << "-1 in for(size_t j=0; j<vAllocationChanged.size(); j++) " << idAlgo << " " << idGrndtr << std::endl;
+                }
+            }
+            itAllocation++;
         }
-        bRes.truePositives += max;
-        bRes.falsePositives -= max;
-        bRes.falseNegatives -= max;
-
-        // Write logfile entry
-        ofLog << maxID << " -> " << itGrndtr->first << " : " << max << std::endl;
+        //std::cout << "cnt: " << ++cnt << ", iNumberOfAllocations: " << iNumberOfAllocations << std::endl;
     }
-
-    bRes.precision = precision(bRes.truePositives, bRes.falsePositives);
+    
+    //std::cout << "Allocation:" << std::endl;
+    //printAllocation(mObjectIDAlgo, mObjectIDGrndtr, mAllocation);
+    
+    bRes.truePositives = iNumberOfAllocations;
+    bRes.falseNegatives = mAllocation.size() - iNumberOfAllocations;
     bRes.recall = recall(bRes.truePositives, bRes.falseNegatives);
-
-    // Write logfile summary
-    writeSummaryToLogFile(ofLog, bRes, iNumFacesGrndtr, iNumFacesAlgo);
+    std::cout << "Number of different persons considered: " << mSeqNoGrndtr.size() << std::endl;
+    std::cout << "Number of different persons recognized by the algorithm: " << mSeqNoAlgo.size() << std::endl;
+    std::cout << "Number of considered faces: " << mAllocation.size() << std::endl;
+    std::cout << "Number of faces recognized correctly: " << iNumberOfAllocations << std::endl;
 
     return bRes;
 }

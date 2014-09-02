@@ -10,4 +10,5 @@ FaceObject::FaceObject() {
 	width = 0;
 	height = 0;
 	truncationLevel = 0.0;
+    iSequentialNumber = -1;
 }

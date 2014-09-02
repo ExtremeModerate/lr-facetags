@@ -62,33 +62,12 @@ bool writeObjectFile(const std::vector<FaceObject> &vfo, const std::string &sFil
 // ________________________________________________________________________________________________
 bool writeObjectFileVector(const std::vector<std::vector<FaceObject> > &vfo, const std::string &sFolder, bool append)
 {
-  std::ofstream ofObjFile;
-  for (size_t j = 0; j < vfo.size(); j++) {
-    if (vfo[j].size() > 0) {
-      std::string fullPath = sFolder + "/" + vfo[j][0].fileName + ".txt";
-      std::cout << fullPath << std::endl;
-	  ofObjFile.clear();
-	  if(append)
-		  ofObjFile.open(fullPath.c_str(), std::ofstream::app);
-	  else
-		  ofObjFile.open(fullPath.c_str());
-	  if(!ofObjFile) continue;
-      for(size_t i=0; i<vfo[j].size(); i++)
-      {
-      ofObjFile << static_cast<int>(vfo[j][i].objectType) << " ";
-		  ofObjFile << vfo[j][i].objectID << " ";
-		  ofObjFile << vfo[j][i].x << " ";
-		  ofObjFile << vfo[j][i].y << " ";
-		  ofObjFile << vfo[j][i].width << " ";
-		  ofObjFile << vfo[j][i].height << " ";
-		  ofObjFile << vfo[j][i].truncationLevel << " ";
-		  ofObjFile << static_cast<int>(vfo[j][i].occlusionLevel);
-		  ofObjFile << std::endl;
-	   }
-	   ofObjFile.close();
-	   if(!ofObjFile) continue;
-	   ofObjFile.flush();
-	  }	  
-  }
-  return true;
+	std::ofstream ofObjFile;
+	for (size_t j = 0; j < vfo.size(); j++) {
+		if (vfo[j].size() > 0) {
+			std::string fullPath = sFolder + "/" + vfo[j][0].fileName + ".txt";
+			writeObjectFile(vfo[j], fullPath, append);
+		}
+	}
+	return true;
 }

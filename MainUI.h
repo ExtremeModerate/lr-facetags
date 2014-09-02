@@ -38,6 +38,7 @@ private slots:
   void compareDetection();
   void compareRecognition();
   void showPlot();
+  void showBBs();
 };
 
 #endif // MAINUI_H
