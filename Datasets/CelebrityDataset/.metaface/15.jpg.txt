@@ -1,0 +1,9 @@
+0 TimR 91 24 53 80 0 0
+0 GarrettW 163 373 64 83 0 0
+0 JenniferL 335 232 50 71 0 1
+0 RobertDun 443 82 58 78 0 2
+0 RobertPick 690 257 67 72 0 0
+0 RoxannD 710 117 56 80 0 0
+0 RobertB 605 43 62 79 0 0
+0 EthanP 355 30 52 84 0 0
+0 RobertDun 240 53 37 86 0 2

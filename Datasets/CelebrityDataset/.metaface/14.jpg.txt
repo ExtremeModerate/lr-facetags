@@ -1,0 +1,8 @@
+0 BrentS 456 193 46 71 0 0
+0 JonathanF 385 30 47 66 0 0
+0 MarinaS 83 167 43 56 0 0
+0 GatesM 251 71 47 56 0 0
+0 MichaelD 140 30 47 63 0 0
+0 PatrickS 303 143 47 70 0 0
+0 PatrickS 264 165 52 5 0 0
+0 LeVaB 181 196 47 66 0 0
