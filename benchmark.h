@@ -29,17 +29,24 @@ double recall(int truePositives, int falseNegatives);
 
 // Computes absolute overlap of two FaceObjects
 double getOverlapAbs(const FaceObject &fo1, const FaceObject &fo2);
+
 // Computes relative overlap of two FaceObjects
 // returns: overlapping area / total area
 double getOverlapRelToTotalArea(const FaceObject &fo1, const FaceObject &fo2);
+
 // Computes relative overlap of two FaceObjects
 // returns: 1.0 if algo area is totally inside ground truth area
 //			else: overlapping area / ground truth area
 double getOverlapRelToGrndtr(const FaceObject &foAlgo, const FaceObject &foGrndtr);
+
 // Compares algo and ground truth.
 // sAlgo: Directory of face object files of algorithm
 // sGrndtr: Directory of face object files of ground truth.
 // threshold: range 0 to 1. Face is a True Positive, if overlap >= threshold.
+// writeLogFile: Whether to write a logfile or not.
+// vAlgo: returns a vector containing all FaceObjects of sAlgo.
+// vGrndtr: returns a vector containing all FaceObjects of sGrndtr.
+benchmarkResult benchmarkDetectionBase(const std::string &sAlgo, const std::string &sGrndtr, double threshold, bool writeLogFile, std::vector<FaceObject> &vAlgoGes, std::vector<FaceObject> &vGrndtrGes);
 benchmarkResult benchmarkDetection(const std::string &sAlgo, const std::string &sGrndtr, double threshold);
 benchmarkResult benchmarkRecognition(const std::string &sAlgo, const std::string &sGrndtr, double threshold);
 

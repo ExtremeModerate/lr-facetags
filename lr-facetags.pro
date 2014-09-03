@@ -32,10 +32,12 @@ HEADERS += benchmark.h \
            RecognitionOpenCV.h \
     TagTrainingSetDialog.h \
     plotdialog.h \
-    qcustomplot.h
+    qcustomplot.h \
+    bbdialog.h
 FORMS += mainwindow.ui \
     TagTrainingSetDialog.ui \
-    plotdialog.ui
+    plotdialog.ui \
+    bbdialog.ui
 SOURCES += benchmark.cpp \
            Detection.cpp \
            FaceObject.cpp \
@@ -43,7 +45,7 @@ SOURCES += benchmark.cpp \
            MainUI.cpp \
            readWriteObjectFile.cpp \
            RecognitionOpenCV.cpp \
-           Tests/readWriteObjectFileTest.cpp \
     TagTrainingSetDialog.cpp \
     plotdialog.cpp \
-    qcustomplot.cpp
+    qcustomplot.cpp \
+    bbdialog.cpp

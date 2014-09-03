@@ -31,7 +31,6 @@ e.G.: lara.jpg Face 000001 15 15 60 60 0.5 3
 The 8 columns represent:
 #Values    Name      Description
 ----------------------------------------------------------------------------
-   1    fileName     Name of the Image File
    1    ObjectType   Describes the type of object: 0 = Face, 1 = DontCareFace
    1    ObjectId     Identification for grouping the same faces
    4    bbox         2D bounding box of object in the image:
@@ -50,7 +49,6 @@ for example because they don't appear anywhere else in the dataset. */
 #include "./FaceObject.h"
 
 std::vector<FaceObject> readObjectFile(const std::string &sFilename);
-std::vector<FaceObject> readObjectFileNoFilename(const std::string &sFilename);
 
 bool writeObjectFile(const std::vector<FaceObject> &vfo, const std::string &sPath, bool append=false);
 

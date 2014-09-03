@@ -24,7 +24,7 @@ struct FaceObject {
     std::string fileName;
 	ObjectType objectType;
 	OcclusionLevel occlusionLevel;
-	int objectID, x, y, width, height;
+    int objectID, x, y, width, height, iSequentialNumber;
 	float truncationLevel;
 	cv::Mat image; 
 	FaceObject();

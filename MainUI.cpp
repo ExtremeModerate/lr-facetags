@@ -20,9 +20,12 @@
 #include "./FaceObject.h"
 #include "benchmark.h"
 #include "plotdialog.h"
+#include "bbdialog.h"
 
 using namespace std;
 using namespace cv;
+
+#define BENCHMARK_OVERLAP_THRESHOLD 0.5
 
 QStringList benchmarkTargets; // list of targets for benchmarking
 string sTimestamp; // timestamp with chosen method of the last detection/recognition run
@@ -48,6 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
   connect(ui->pushCompareDetection, SIGNAL(clicked()), this, SLOT(compareDetection()));
   connect(ui->pushCompareRecognition, SIGNAL(clicked()), this, SLOT(compareRecognition()));
   connect(ui->pushShowPlot, SIGNAL(clicked()), this, SLOT(showPlot()));
+  connect(ui->pushShowBBs, SIGNAL(clicked()), this, SLOT(showBBs()));
 }
 
 MainWindow::~MainWindow() {
@@ -241,6 +245,7 @@ void MainWindow::loadRun() {
   benchmarkTargets << dir;
   ui->outputRuns->append(tmp.value(tmp.length()-1));
   benchmarkTargets.removeDuplicates();
+  sTimestamp = tmp.value(tmp.length()-1).toStdString();
 }
 
 void MainWindow::compareDetection() {
@@ -251,7 +256,7 @@ void MainWindow::compareDetection() {
 	QString work = benchmarkTargets.at(i);
     ui->outputText->append(work);
     //benchmarkResult bRes = benchmark(work.toAscii().data(), gTruth.toAscii().data(), 0.5, false);
-    benchmarkResult bRes = benchmarkDetection(work.toAscii().data(), gTruth.toAscii().data(), 0.5);
+    benchmarkResult bRes = benchmarkDetection(work.toAscii().data(), gTruth.toAscii().data(), BENCHMARK_OVERLAP_THRESHOLD);
     PlotStruct plot_struct;
     plot_struct.pr.push_back(bRes.precision);
     plot_struct.rc.push_back(bRes.recall);
@@ -263,13 +268,12 @@ void MainWindow::compareDetection() {
 }
 
 void MainWindow::compareRecognition() {
-  // TODO: Find bug in benchmarkRecognition ?
     ui->outputText->append("begin compareRecognition()");
   QString gTruth = ui->inputPath->text() + "/.metaface";
   for (int i = 0; i < benchmarkTargets.size(); ++i) {
     QString work = benchmarkTargets.at(i);
     ui->outputText->append(work);
-    benchmarkResult bRes = benchmarkRecognition(work.toAscii().data(), gTruth.toAscii().data(), 0.5);
+    benchmarkResult bRes = benchmarkRecognition(work.toAscii().data(), gTruth.toAscii().data(), BENCHMARK_OVERLAP_THRESHOLD);
     ui->outputText->append(bRes.toString().c_str());
   }
   ui->outputText->append("end compareRecognition()");
@@ -283,4 +287,10 @@ void MainWindow::showPlot() {
     }
     plotDialog.plotGraphs();
     plotDialog.exec();
+}
+
+void MainWindow::showBBs()
+{
+    BBdialog bbdialog(ui->inputPath->text(), benchmarkTargets, this);
+    bbdialog.exec();
 }

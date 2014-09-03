@@ -29,7 +29,7 @@ void recognizeLBPHistogramsOpenCV(vector<vector<FaceObject> > & faceObjects, vec
            faceObjects[k][l].objectID = prediction;
            images.push_back(faceObjects[k][l].image);
            labels.push_back(prediction);
-           model->update(images, labels);
+           //model->update(images, labels);
          }
          // new ID if face is unknown
          else {
@@ -38,10 +38,15 @@ void recognizeLBPHistogramsOpenCV(vector<vector<FaceObject> > & faceObjects, vec
            images.push_back(faceObjects[k][l].image);
            labels.push_back(ctr);
            ctr++;
-           model->update(images, labels);
-        }          
+           //model->update(images, labels);
+        }
+         if(k<40)
+             model->update(images, labels);
       }
-    }    
+    }
+    if(k%10 == 0)
+        model->update(images, labels);
+    cout << "k=" << k << endl;
   }
 }
 
@@ -61,10 +66,10 @@ void recognizeFisherfacesOpenCV(std::vector<std::vector<FaceObject> > & faceObje
          model->predict(faceObjects[k][l].image, prediction, confidence);
          cout << faceObjects[k][l].fileName<<" "<<" recognized objectID: "<<prediction<<" confidence: " << confidence << endl;
          if (confidence > 300) {
-           faceObjects[k][l].objectID = prediction;
-           images.push_back(faceObjects[k][l].image);
-           labels.push_back(prediction);
-           model->train(images, labels);
+             faceObjects[k][l].objectID = prediction; //cout << "Test 1" << endl;
+           images.push_back(faceObjects[k][l].image); //cout << "Test 2" << endl;
+           labels.push_back(prediction); //cout << "Test 3" << endl;
+           //model->train(images, labels);
          }
          // new ID if face is unknown
          else {
@@ -73,10 +78,18 @@ void recognizeFisherfacesOpenCV(std::vector<std::vector<FaceObject> > & faceObje
            images.push_back(faceObjects[k][l].image);
            labels.push_back(ctr);
            ctr++;
-           model->train(images, labels);
+           //model->train(images, labels);
         }
+          //cout << "Test 4" << endl;
+         if(k<40)
+             model->train(images, labels);
+          //cout << "Test 5" << endl;
       }
+      //cout << "l=" << l << endl;
     }
+    if(k%10 == 0)
+        model->train(images, labels);
+    cout << "k=" << k << endl;
   }
 }
 
@@ -98,7 +111,7 @@ void recognizeEigenfacesOpenCV(std::vector<std::vector<FaceObject> > & faceObjec
            faceObjects[k][l].objectID = prediction;
            images.push_back(faceObjects[k][l].image);
            labels.push_back(prediction);
-           model->train(images, labels);
+           //model->train(images, labels);
          }
          // new ID if face is unknown
          else {
@@ -107,9 +120,14 @@ void recognizeEigenfacesOpenCV(std::vector<std::vector<FaceObject> > & faceObjec
            images.push_back(faceObjects[k][l].image);
            labels.push_back(ctr);
            ctr++;
-           model->train(images, labels);
+           //model->train(images, labels);
         }
+         if(k<40)
+             model->train(images, labels);
       }
     }
+    if(k%10 == 0)
+        model->train(images, labels);
+    cout << "k=" << k << endl;
   }
 }
