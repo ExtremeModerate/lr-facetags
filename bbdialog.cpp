@@ -17,7 +17,7 @@ BBdialog::BBdialog(QString path, QStringList classifiers, QWidget *parent) :
 
     imageFolder = path;
     iNumColors = 0;
-    ui->label_image->setScaledContents(true);
+    //ui->label_image->setScaledContents(true);
 
     // Fill classifier list
     ui->listWidgetClassifier->addItems(classifiers);
@@ -79,7 +79,6 @@ void BBdialog::showImage()
     drawBBs(img, imageFolder+"/.metaface/"+imgFileName+".txt", green);
     if(ui->listWidgetClassifier->selectedItems().size() > 0)
         drawBBs(img, ui->listWidgetClassifier->selectedItems().at(0)->text()+"/"+imgFileName+".txt", color);
+    img = img.scaled(ui->label_image->width(), ui->label_image->height(), Qt::KeepAspectRatio);
     ui->label_image->setPixmap(QPixmap::fromImage(img));
-    //ui->label_image->setPixmap(QPixmap::fromImage(img));
-    //ui->label_image->setText(imageFolder+"/"+ui->listWidgetImages->selectedItems().at(0)->text());
 }
