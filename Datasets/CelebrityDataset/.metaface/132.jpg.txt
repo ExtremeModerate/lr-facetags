@@ -1,0 +1,7 @@
+0 PippaM 781 104 82 92 0 0
+0 CaroleM 327 109 71 90 0 0
+0 FrancisM 79 94 79 94 0 0
+0 JamesW 543 69 75 102 0 0
+0 WilliamM 595 287 75 80 0 0
+0 LouiseW 102 323 77 84 0 0
+0 MargaritaL 377 318 63 77 0 0

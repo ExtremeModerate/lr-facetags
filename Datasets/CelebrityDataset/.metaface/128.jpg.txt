@@ -1,0 +1,12 @@
+0 PrincePhilip 220 261 48 71 0 0
+0 PrinceCharles 329 276 45 64 0 0
+0 Camilla 440 303 41 60 0 0
+0 PrinceHarry 550 254 43 64 0 0
+0 Queen 403 448 47 58 0 0
+0 Kate 638 418 50 56 0 0
+0 PrinceGeorge 614 527 41 47 0 0
+0 PrinceWilliam 804 393 56 81 0 0
+0 PippaM 692 293 39 56 0 0
+0 CaroleM 928 292 50 56 0 0
+0 FrancisM 1041 267 54 64 0 0
+0 JamesW 821 269 43 64 0 0
