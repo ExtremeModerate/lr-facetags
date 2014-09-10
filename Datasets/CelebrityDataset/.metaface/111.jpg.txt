@@ -1,0 +1,7 @@
+0 MatthewG 412 36 38 48 0 0
+0 ShemarM 227 50 36 40 0 0
+0 JoeM 56 25 36 58 0 0
+0 ThomasG 107 41 30 53 0 0
+0 AndreaJ 305 56 27 45 0 0
+0 JeanneT 370 52 30 45 0 0
+0 KirstenV 180 86 28 45 0 0
