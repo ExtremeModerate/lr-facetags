@@ -56,3 +56,9 @@ vector<Point2f>& srcPoints, vector<Point2f>& dstPoints) {
 }
 
 // TODO: Main fnct which uses sift features for the NN-Algorithm
+int main(int argc, char** argv) {
+  if (argc < 2) {
+    cerr << "Too few arguments" << endl;
+    return -1;
+  }
+} 
