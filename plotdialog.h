@@ -19,7 +19,7 @@ public:
     
 private:
     Ui::PlotDialog *ui;
-    int iNumGraph;
+    int iNumGraph, iNumColor;
 };
 
 #endif // PLOTDIALOG_H

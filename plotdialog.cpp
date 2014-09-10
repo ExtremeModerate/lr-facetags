@@ -7,6 +7,7 @@ PlotDialog::PlotDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     iNumGraph = -1;
+    iNumColor = -1;
 }
 
 PlotDialog::~PlotDialog()
@@ -17,11 +18,13 @@ PlotDialog::~PlotDialog()
 void PlotDialog::addGraph(QVector<double> pr, QVector<double> rc, const QString &name)
 {
     iNumGraph++;
+    iNumColor++;
+    if(iNumColor%10 == 12-7) iNumColor++; // Do not use yellow
     //printf("iNumGraph=%d\n",iNumGraph);
     ui->customPlot->addGraph();
     ui->customPlot->graph(iNumGraph)->setData(rc, pr);
-    ui->customPlot->graph(iNumGraph)->setPen(QPen((Qt::GlobalColor)(7+(iNumGraph%10)))); // Use colors 7..18 of Qt::GlobalColor
-    ui->customPlot->graph(iNumGraph)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssPlus, (Qt::GlobalColor)(7+(iNumGraph%10)), 8));
+    ui->customPlot->graph(iNumGraph)->setPen(QPen((Qt::GlobalColor)(7+(iNumColor%10)))); // Use colors 7..18 of Qt::GlobalColor
+    ui->customPlot->graph(iNumGraph)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssPlus, (Qt::GlobalColor)(7+(iNumColor%10)), 8));
     ui->customPlot->graph(iNumGraph)->setName(name);
 }
 
