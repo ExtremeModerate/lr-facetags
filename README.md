@@ -5,7 +5,7 @@ lr-facetags
 
 ## Requirements: OpenCV 2.4.9, QT, QCustomPlot
 1. apt-get install libopencv-dev 
-(caution: installs OpenCV version 2.3.x and it may not contain the "-lopencv_nonfree" lib [compile it yourself](https://github.com/mll-freiburg/lr-facetags/wiki/opencv).) 
+(caution: installs OpenCV version 2.3.x and it may not contain the "-lopencv_nonfree" lib. So [compile it yourself](https://github.com/mll-freiburg/lr-facetags/wiki/opencv).) 
 2. apt-get install qt4-dev-tools
 3. Download QCustomPlot (http://www.qcustomplot.com/). Copy qcustomplot.cpp and qcustomplot.h to your lr-facetags directory.
 
