@@ -1,0 +1,7 @@
+0 EvannaL 466 137 39 52 0 0
+0 ClemenceP 303 116 43 52 0 0
+0 NataliaT 404 129 40 50 0 0
+0 JasonI 552 106 52 65 0 0
+0 JamesP 214 79 47 60 0 0
+0 OliverP 42 74 42 63 0 0
+0 MarkW 113 93 45 62 0 1

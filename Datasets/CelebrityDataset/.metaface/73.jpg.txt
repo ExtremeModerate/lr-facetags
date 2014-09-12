@@ -1,0 +1,9 @@
+0 EmmaW 252 99 52 71 0 0
+0 RupertG 135 88 59 76 0 0
+0 EvannaL 29 142 54 75 0 0
+0 TomF 378 95 56 75 0 0
+0 BonnieW 495 130 55 57 0 0
+0 JamesP 284 26 50 71 0 0
+0 OliverP 141 30 51 65 0 1
+0 DomhnallG 402 34 68 63 0 1
+0 MatthewL 497 43 76 73 0 1

@@ -1,0 +1,9 @@
+0 ChrisP 540 79 38 38 0 0
+0 KarenG 493 88 31 40 0 1
+0 DaveB 245 83 32 38 0 0
+0 PeterS 314 91 41 42 0 0
+0 DjimonH 372 86 38 39 0 0
+0 PeterS 95 69 39 46 0 0
+0 BenicioT 615 80 38 48 0 0
+0 BenicioT 162 90 45 45 0 0
+0 KarenG 423 87 28 33 0 1

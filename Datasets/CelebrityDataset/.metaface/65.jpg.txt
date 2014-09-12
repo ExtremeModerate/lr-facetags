@@ -1,0 +1,7 @@
+0 KirstenV 312 142 52 64 0 0
+0 ThomasG 385 120 56 68 0 0
+0 JoeM 453 133 61 66 0 0
+0 AndreaJ 234 129 43 67 0 0
+0 AndreaJ 234 129 43 67 0 0
+0 MatthewG 157 117 50 78 0 0
+0 JeanneT 79 141 49 62 0 0
