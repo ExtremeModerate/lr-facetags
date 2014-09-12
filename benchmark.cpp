@@ -72,7 +72,7 @@ double getOverlapRelToGrndtr(const FaceObject &foAlgo, const FaceObject &foGrndt
 	{
 		return 1.0;
 	}
-	return aAlgo / aGrndtr;
+	return oa / aGrndtr;
 }
 
 std::string openLogfile(std::ofstream &ofLog, const std::string &sAlgo, const std::string &sGrndtr, double threshold, const std::string &sFunction)
